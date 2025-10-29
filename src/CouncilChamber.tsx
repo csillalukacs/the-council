@@ -3,13 +3,14 @@ import { Html, Float, Sparkles, OrbitControls } from "@react-three/drei";
 import { useMemo, useRef, useState, type JSX } from "react";
 import * as THREE from "three";
 
-const COUNCIL_SIZE = 8;
+const COUNCIL_SIZE = 7;
 
 type CouncilMemberData = {
   position: THREE.Vector3;
   color: string;
   personality: string;
   geometryFn: (size: number) => JSX.Element;
+  font: string;
 };
 
 const geometries = [
@@ -27,12 +28,14 @@ const CouncilMemberMesh = ({
   geometryFn,
   active,
   answer,
+  font,
 }: {
   position: Vector3;
   color: string;
   geometryFn: (size: number) => JSX.Element;
   active: boolean;
   answer?: string;
+  font: string;
 }) => {
   const mesh = useRef<THREE.Mesh>(null!);
   const clock = useRef(new THREE.Clock());
@@ -49,11 +52,11 @@ const CouncilMemberMesh = ({
   return (
     <group position={position}>
       <mesh ref={mesh}>
-        {geometryFn(0.4)}
+        {geometryFn(0.8)}
         <meshStandardMaterial
           color={color}
           emissive={active ? color : "gray"}
-          emissiveIntensity={active ? 0.3 : 0.2}
+          emissiveIntensity={active ? 0.3 : 0.1}
           roughness={0.3}
           metalness={0.8}
         />
@@ -65,8 +68,9 @@ const CouncilMemberMesh = ({
             border: "1px solid rgba(255,255,255,0.3)",
             padding: "4px 8px",
             borderRadius: "6px",
-            color: "white",
-            fontSize: "12px",
+            color: color,
+            fontSize: "13px",
+            fontFamily: font,
             backdropFilter: "blur(4px)",
             width: "300px",
             textAlign: "center",
@@ -94,21 +98,33 @@ export default function CouncilChamber() {
           Math.sin(angle) * radius
         );
         const personalities = [
-          "You are poetic and cryptic, answering in metaphors.",
-          "You are The Analyst - Data-driven, logical, evidence-based. Might be an AI. Offers research, statistics, cognitive frameworks. Removes emotion to see clearly.",
+          "You are The Sage. You are poetic and cryptic, answering in metaphors and riddles. Often frustrating, but always wise. Your answers are often short.",
+          "You are The Analyst - Data-driven, logical, evidence-based. Probably AI. Offers research, statistics, cognitive frameworks. Removes emotion to see clearly. Types in all-lowercase, uses technical terms. Your advice is not always wholesome, but it *works*",
           "You are The Challenger - Plays devil's advocate, questions assumptions, pushes back on self-deception. Sometimes uncomfortable but catalyzes growth. 'Are you sure that's really the problem?'",
           "You are The Empath - Deeply attuned to emotions and relationships. Helps the citizen understand their feelings and those of others involved. The emotional translator.",
-          "You are philosophical, pondering the question deeply.",
-          "You are skeptical and contrarian.",
-          "You are optimistic and cheerful.",
-          "You are ancient and wise, speaking in riddles.",
+          "You are The Historian - Your main job is to provide historical perspective. Recognizes patterns from human history. 'This reminds me of when...'  Provides relevant historical quotes. Uses old timey language.",
+          "You are The Wildcard. You try to distract the citizen if you sense that they are too lost in their own head.",
+          "You are The Priest. You provide spiritual guidance and comfort to the citizen. Offers prayers, meditations, and other spiritual practices.",
         ];
+
+        const fonts = [
+          "Times New Roman",
+          "Courier New",
+          "Arial",
+          "Helvetica",
+          "Verdana",
+          "Georgia",
+          "Palatino",
+        ]
+
+        const colors = ['#ff8800', '#00ff00', '#8888ff', '#ffff00', '#ff00ff', '#00ffff', '#ffffff'];
 
         const geometryFn = geometries[i % geometries.length];
 
         return {
           position,
-          color: `hsl(${Math.random() * 360}, 70%, 50%)`, // random color
+          font: fonts[i % fonts.length],
+          color: colors[i % colors.length],
           personality: personalities[i % personalities.length],
           geometryFn,
         };
@@ -145,7 +161,7 @@ export default function CouncilChamber() {
                 {
                   role: "system",
                   content:
-                    "You are a member of a temporary council, advising a Citizen. Do not ask the user questions; they will not get to reply.",
+                    "You are a member of a temporary council, advising a Citizen. Do not reveal your role. Keep it brief when possible. Do not ask the user questions; they will not get to reply. Always give advice based on your unique viewpoint and personality. Do not give advice that most people would give.",
                 },
                 { role: "system", content: `${m.personality}` },
                 { role: "user", content: query },
@@ -192,7 +208,10 @@ export default function CouncilChamber() {
     >
       <Canvas camera={{ position: [0, 3, 8], fov: 50 }}>
         <ambientLight intensity={0.3} />
+
         <pointLight position={[0, 5, 0]} intensity={2} color="#8ff" />
+        <directionalLight position={[0, 10, 0]} intensity={0.5} color="#8ff" />
+
         <Sparkles count={80} scale={10} size={2} color="#66ccff" speed={0.5} />
         <Float rotationIntensity={0}>
           {members.map((member, i) => (
@@ -203,6 +222,7 @@ export default function CouncilChamber() {
               active={activeMembers.includes(i)}
               answer={answers[i]}
               geometryFn={member.geometryFn}
+              font={member.font}
             />
           ))}
         </Float>
@@ -224,7 +244,7 @@ export default function CouncilChamber() {
               }}
             >
               <textarea
-                placeholder="Ask the council..."
+                placeholder="the council is listening. what ails you, citizen?"
                 value={query}
                 onChange={(e) => {
                   setQuery(e.target.value);
