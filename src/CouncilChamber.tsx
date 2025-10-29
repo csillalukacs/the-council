@@ -1,8 +1,8 @@
 import { Canvas } from "@react-three/fiber";
 import { Html, Float, Sparkles, OrbitControls } from "@react-three/drei";
-import { useMemo, useState, type JSX } from "react";
+import { useMemo, useState, useEffect, type JSX } from "react";
 import * as THREE from "three";
-import {CouncilMemberMesh} from "./CouncilMemberMesh";
+import { CouncilMemberMesh } from "./CouncilMemberMesh";
 
 const COUNCIL_SIZE = 7;
 
@@ -23,61 +23,61 @@ const geometries = [
   (size: number) => <icosahedronGeometry args={[size, 1]} />,
 ];
 
-
 export default function CouncilChamber() {
-  const members: CouncilMemberData[] = useMemo(
-    () =>
-      Array.from({ length: COUNCIL_SIZE }).map((_, i) => {
-        const angle = (i / COUNCIL_SIZE) * Math.PI * 2;
-        const radius = 4;
-        const position = new THREE.Vector3(
-          Math.cos(angle) * radius,
-          0,
-          Math.sin(angle) * radius
-        );
-        const personalities = [
-          "You are The Sage. You are poetic and cryptic, answering in metaphors and riddles. Often frustrating, but always wise. Your answers are often short.",
-          "You are The Analyst - Data-driven, logical, evidence-based. Probably AI. Offers research, statistics, cognitive frameworks. Removes emotion to see clearly. Types in all-lowercase, uses technical terms. Your advice is not always wholesome, but it *works*",
-          "You are The Challenger - Plays devil's advocate, questions assumptions, pushes back on self-deception. Sometimes uncomfortable but catalyzes growth. 'Are you sure that's really the problem?'",
-          "You are The Empath - Deeply attuned to emotions and relationships. Helps the citizen understand their feelings and those of others involved. The emotional translator.",
-          "You are The Historian - Your main job is to provide historical perspective. Recognizes patterns from human history. 'This reminds me of when...'  Provides relevant historical quotes. Uses old timey language.",
-          "You are The Wildcard. You try to distract the citizen if you sense that they are too lost in their own head.",
-          "You are The Priest. You provide spiritual guidance and comfort to the citizen. Offers prayers, meditations, and other spiritual practices.",
-        ];
+  const members: CouncilMemberData[] = useMemo(() => {
+    return Array.from({ length: COUNCIL_SIZE }).map((_, i) => {
+      const angle = (i / COUNCIL_SIZE) * Math.PI * 2;
+      const radius = 4;
+      const position = new THREE.Vector3(
+        Math.cos(angle) * radius,
+        0,
+        Math.sin(angle) * radius
+      );
+      const personalities = [
+        "You are The Sage. You are poetic and cryptic, answering in metaphors and riddles. Often frustrating, but always wise. Your answers are often short.",
+        "You are The Analyst - Data-driven, logical, evidence-based. Probably AI. Offers research, statistics, cognitive frameworks. Removes emotion to see clearly. Types in all-lowercase, uses technical terms. Your advice is not always wholesome, but it *works*",
+        "You are The Challenger - Plays devil's advocate, questions assumptions, pushes back on self-deception. Sometimes uncomfortable but catalyzes growth. 'Are you sure that's really the problem?'",
+        "You are The Empath - Deeply attuned to emotions and relationships. Helps the citizen understand their feelings and those of others involved. The emotional translator.",
+        "You are The Historian - Your main job is to provide historical perspective. Recognizes patterns from human history. 'This reminds me of when...' Provides relevant historical quotes. Uses old timey language.",
+        "You are The Wildcard. You try to distract the citizen if you sense that they are too lost in their own head.",
+        "You are The Priest. You provide spiritual guidance and comfort to the citizen. Offers prayers, meditations, and other spiritual practices.",
+      ];
 
-        const fonts = [
-          "Times New Roman",
-          "Courier New",
-          "Arial",
-          "Helvetica",
-          "Verdana",
-          "Georgia",
-          "Palatino",
-        ];
+      const fonts = [
+        "Times New Roman",
+        "Courier New",
+        "Arial",
+        "Helvetica",
+        "Verdana",
+        "Georgia",
+        "Palatino",
+      ];
 
-        const colors = [
-          "#ff8800",
-          "#00ff00",
-          "#8888ff",
-          "#ffff00",
-          "#ff00ff",
-          "#00ffff",
-          "#ffffff",
-        ];
+      const colors = [
+        "#ff8800",
+        "#00ff00",
+        "#8888ff",
+        "#ffff00",
+        "#ff00ff",
+        "#00ffff",
+        "#ffffff",
+      ];
 
-        const geometryFn = geometries[i % geometries.length];
+      const geometryFn = geometries[i % geometries.length];
 
-        return {
-          position,
-          font: fonts[i % fonts.length],
-          color: colors[i % colors.length],
-          personality: personalities[i % personalities.length],
-          geometryFn,
-        };
-      }),
-    []
-  );
+      return {
+        position,
+        font: fonts[i % fonts.length],
+        color: colors[i % colors.length],
+        personality: personalities[i % personalities.length],
+        geometryFn,
+      };
+    });
+  }, []);
 
+  const [apiKey, setApiKey] = useState<string | null>(null);
+  const [showKeyInput, setShowKeyInput] = useState(true);
+  const [tempKey, setTempKey] = useState("");
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [activeMembers, setActiveMembers] = useState<number[]>([]);
@@ -85,13 +85,25 @@ export default function CouncilChamber() {
     Array(members.length).fill(undefined)
   );
 
+  useEffect(() => {
+    const savedKey = localStorage.getItem("openrouter_api_key");
+    if (savedKey) setApiKey(savedKey);
+  }, []);
+
+  const saveKey = () => {
+    if (tempKey.trim()) {
+      localStorage.setItem("openrouter_api_key", tempKey.trim());
+      setApiKey(tempKey.trim());
+      setShowKeyInput(false);
+    }
+  };
+
   const askCouncil = async () => {
-    if (!query.trim()) return;
+    if (!query.trim() || !apiKey) return;
     setLoading(true);
     setActiveMembers(Array.from({ length: COUNCIL_SIZE }, (_, i) => i));
     setAnswers(Array(members.length).fill(undefined));
 
-    // Launch all fetches simultaneously
     await Promise.allSettled(
       members.map(async (m, i) => {
         try {
@@ -100,9 +112,7 @@ export default function CouncilChamber() {
             {
               method: "POST",
               headers: {
-                Authorization: `Bearer ${
-                  import.meta.env.VITE_OPENROUTER_API_KEY
-                }`,
+                Authorization: `Bearer ${apiKey}`,
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
@@ -123,17 +133,13 @@ export default function CouncilChamber() {
           const data = await response.json();
           const output = data?.choices?.[0]?.message?.content ?? "*silence*";
 
-          // Update this member’s answer immediately
           setAnswers((prev) => {
             const newAnswers = [...prev];
             newAnswers[i] = output;
             return newAnswers;
           });
-
-          // Mark this member as done
           setActiveMembers((prev) => prev.filter((x) => x !== i));
-        } catch (error) {
-          console.error(error);
+        } catch {
           setAnswers((prev) => {
             const newAnswers = [...prev];
             newAnswers[i] = "Error fetching response.";
@@ -157,10 +163,8 @@ export default function CouncilChamber() {
     >
       <Canvas camera={{ position: [0, 3, 8], fov: 50 }}>
         <ambientLight intensity={0.3} />
-
         <pointLight position={[0, 5, 0]} intensity={2} color="#8ff" />
         <directionalLight position={[0, 10, 0]} intensity={0.5} color="#8ff" />
-
         <Sparkles count={80} scale={10} size={2} color="#66ccff" speed={0.5} />
         <Float rotationIntensity={0}>
           {members.map((member, i) => (
@@ -177,7 +181,79 @@ export default function CouncilChamber() {
         </Float>
 
         <Html center position={[0, -1, 0]}>
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+              alignItems: "center",
+            }}
+          >
+            {/* API Key UI */}
+            {showKeyInput ? (
+              <div
+                style={{
+                  display: "flex",
+                  gap: "8px",
+                  alignItems: "center",
+                  background: "rgba(102,204,255,0.1)",
+                  padding: "6px 10px",
+                  borderRadius: "8px",
+                  border: "1px solid rgba(102,204,255,0.4)",
+                  backdropFilter: "blur(6px)",
+                }}
+              >
+                <input
+                  type="text"
+                  value={tempKey}
+                  onChange={(e) => setTempKey(e.target.value)}
+                  placeholder="Enter your OpenRouter API key"
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "#ccf6ff",
+                    outline: "none",
+                    width: "280px",
+                  }}
+                />
+                <button
+                  onClick={saveKey}
+                  style={{
+                    padding: "6px 10px",
+                    background: "rgba(102,204,255,0.15)",
+                    border: "1px solid rgba(102,204,255,0.4)",
+                    borderRadius: "6px",
+                    color: "#ccf6ff",
+                    cursor: "pointer",
+                  }}
+                >
+                  Save
+                </button>
+              </div>
+            ) : (
+              apiKey && (
+                <button
+                  onClick={() => setShowKeyInput(true)}
+                  title="Edit API key"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    background: "rgba(102,204,255,0.1)",
+                    border: "1px solid rgba(102,204,255,0.4)",
+                    borderRadius: "6px",
+                    color: "#ccf6ff",
+                    padding: "4px 8px",
+                    cursor: "pointer",
+                    backdropFilter: "blur(6px)",
+                  }}
+                >
+                  edit key
+                </button>
+              )
+            )}
+
+            {/* Question input */}
             <div
               style={{
                 padding: "8px 16px",
@@ -197,13 +273,11 @@ export default function CouncilChamber() {
                 value={query}
                 onChange={(e) => {
                   setQuery(e.target.value);
-
-                  // auto-expand logic
                   const target = e.target;
-                  target.style.height = "auto"; // reset height
+                  target.style.height = "auto";
                   target.style.height =
                     Math.min(target.scrollHeight, window.innerHeight * 0.6) +
-                    "px"; // max 60vh
+                    "px";
                 }}
                 style={{
                   width: "500px",
@@ -214,34 +288,42 @@ export default function CouncilChamber() {
                   textAlign: "center",
                   fontSize: "16px",
                   overflow: "scroll",
-                  resize: "none", // prevent manual resizing
+                  resize: "none",
                 }}
               />
             </div>
+
+            {/* Ask button */}
             <button
-              disabled={loading}
+              disabled={loading || !apiKey}
               onClick={askCouncil}
               style={{
                 marginTop: "12px",
                 padding: "8px 16px",
-                background: loading
-                  ? "rgba(102, 204, 255, 0.05)"
-                  : "rgba(102, 204, 255, 0.15)",
+                background:
+                  loading || !apiKey
+                    ? "rgba(102, 204, 255, 0.05)"
+                    : "rgba(102, 204, 255, 0.15)",
                 border: "1px solid rgba(102, 204, 255, 0.4)",
                 borderRadius: "6px",
                 color: "#ccf6ff",
                 fontSize: "14px",
                 letterSpacing: "0.5px",
-                cursor: loading ? "not-allowed" : "pointer",
+                cursor: loading || !apiKey ? "not-allowed" : "pointer",
                 backdropFilter: "blur(6px)",
                 boxShadow: "0 0 12px rgba(102, 204, 255, 0.3)",
                 transition: "all 0.2s ease",
               }}
             >
-              {loading ? "the council is deliberating..." : "ask the council"}
+              {!apiKey
+                ? "enter openrouter api key to ask"
+                : loading
+                ? "the council is deliberating..."
+                : "ask the council"}
             </button>
           </div>
         </Html>
+
         <OrbitControls enablePan={false} enableZoom={false} />
       </Canvas>
     </div>
