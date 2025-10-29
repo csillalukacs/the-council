@@ -16,7 +16,7 @@ const CouncilMember = ({ position, color, active }) => {
         <icosahedronGeometry args={[0.4, 1]} />
         <meshStandardMaterial
           color={color}
-          emissive={active ? color : 'black'}
+          emissive={active ? color : 'blue'}
           emissiveIntensity={active ? 1.5 : 0.2}
           roughness={0.3}
           metalness={0.8}
@@ -55,7 +55,7 @@ export default function CouncilChamber() {
   })
 
   return (
-    <div style={{ height: '100vh', background: 'radial-gradient(circle at center, #111, #000)' }}>
+    <div style={{ height: '100vh', width: '100vw', background: 'radial-gradient(circle at center, #111, #000)' }}>
       <Canvas camera={{ position: [0, 3, 8], fov: 50 }}>
         <ambientLight intensity={0.3} />
         <pointLight position={[0, 5, 0]} intensity={2} color="#8ff" />
