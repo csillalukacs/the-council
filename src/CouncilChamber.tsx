@@ -62,6 +62,43 @@ export default function CouncilChamber() {
   });
 
   const [query, setQuery] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+
+  const askMember = async function (member: number) {
+    console.log("askMember", member);
+    setLoading(true);
+    // setResult(""); // clear previous result
+    try {
+      const response = await fetch(
+        "https://openrouter.ai/api/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "meta-llama/llama-3.3-8b-instruct:free",
+            messages: [
+              {
+                role: "user",
+                content: query,
+              },
+            ],
+          }),
+        }
+      );
+
+      const data = await response.json();
+      const output = data?.choices?.[0]?.message?.content ?? "No response.";
+
+      console.log(output);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div
@@ -88,34 +125,72 @@ export default function CouncilChamber() {
 
         {/* Central altar / input placeholder */}
         <Html center position={[0, -1, 0]}>
-          <div
-            style={{
-              background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.2)",
-              borderRadius: "8px",
-              padding: "12px 16px",
-              color: "#fff",
-              minWidth: "300px",
-              textAlign: "center",
-              backdropFilter: "blur(6px)",
-            }}
-          >
-            <textarea
-              placeholder="Ask the council..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div
               style={{
-                width: "100%",
-                background: "transparent",
-                border: "none",
-                color: "white",
-                outline: "none",
-                textAlign: "center",
-                fontSize: "16px",
+                padding: "8px 16px",
+                background: "rgba(102, 204, 255, 0.15)",
+                border: "1px solid rgba(102, 204, 255, 0.4)",
+                borderRadius: "6px",
+                minWidth: "300px",
+                color: "#ccf6ff",
+                fontSize: "14px",
+                letterSpacing: "0.5px",
+                backdropFilter: "blur(6px)",
+                boxShadow: "0 0 12px rgba(102, 204, 255, 0.3)",
               }}
-            />
+            >
+              <textarea
+                placeholder="Ask the council..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                style={{
+                  width: "100%",
+                  background: "transparent",
+                  border: "none",
+                  color: "white",
+                  outline: "none",
+                  textAlign: "center",
+                  fontSize: "16px",
+                }}
+              />
+            </div>
+            <button
+              disabled={loading}
+              style={{
+                marginTop: "12px",
+                padding: "8px 16px",
+                background: "rgba(102, 204, 255, 0.15)",
+                border: "1px solid rgba(102, 204, 255, 0.4)",
+                borderRadius: "6px",
+                color: "#ccf6ff",
+                fontSize: "14px",
+                letterSpacing: "0.5px",
+                cursor: "pointer",
+                backdropFilter: "blur(6px)",
+                boxShadow: "0 0 12px rgba(102, 204, 255, 0.3)",
+                transition:
+                  "background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget.style.background =
+                  "rgba(102, 204, 255, 0.25)"),
+                  (e.currentTarget.style.boxShadow =
+                    "0 0 16px rgba(102, 204, 255, 0.6)"),
+                  (e.currentTarget.style.transform = "translateY(-1px)");
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget.style.background =
+                  "rgba(102, 204, 255, 0.15)"),
+                  (e.currentTarget.style.boxShadow =
+                    "0 0 12px rgba(102, 204, 255, 0.3)"),
+                  (e.currentTarget.style.transform = "translateY(0)");
+              }}
+              onClick={() => askMember(0)}
+            >
+              ask the council
+            </button>
           </div>
-          <button>ask the council</button>
         </Html>
 
         {/* <OrbitControls enablePan={false} /> */}
