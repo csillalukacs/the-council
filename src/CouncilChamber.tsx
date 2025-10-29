@@ -45,8 +45,10 @@ const CouncilMemberMesh = ({
     mesh.current.rotation.y += 0.002; // keep slow spin
 
     // Pulse when active
-    const scale = active ? 1 + Math.sin(t * 4) * 0.1 : 1;
+    const scale = active ? 1 + Math.sin(t * 4) * 0.02 : 1;
     mesh.current.scale.set(scale, scale, scale);
+    const intensity = active ? 0.3 + Math.sin(t * 4) * 0.2 : 0.1;
+    mesh.current.material.emissiveIntensity = intensity;
   });
 
   return (
@@ -115,9 +117,17 @@ export default function CouncilChamber() {
           "Verdana",
           "Georgia",
           "Palatino",
-        ]
+        ];
 
-        const colors = ['#ff8800', '#00ff00', '#8888ff', '#ffff00', '#ff00ff', '#00ffff', '#ffffff'];
+        const colors = [
+          "#ff8800",
+          "#00ff00",
+          "#8888ff",
+          "#ffff00",
+          "#ff00ff",
+          "#00ffff",
+          "#ffffff",
+        ];
 
         const geometryFn = geometries[i % geometries.length];
 
@@ -144,59 +154,62 @@ export default function CouncilChamber() {
     setLoading(true);
     setActiveMembers(Array.from({ length: COUNCIL_SIZE }, (_, i) => i));
     setAnswers(Array(members.length).fill(undefined));
-  
+
     // Launch all fetches simultaneously
     await Promise.allSettled(
       members.map(async (m, i) => {
         try {
-          const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              model: "meta-llama/llama-3.3-70b-instruct:free",
-              messages: [
-                {
-                  role: "system",
-                  content:
-                    "You are a member of a temporary council, advising a Citizen. Do not reveal your role. Keep it brief when possible. Do not ask the user questions; they will not get to reply. Always give advice based on your unique viewpoint and personality. Do not give advice that most people would give.",
-                },
-                { role: "system", content: `${m.personality}` },
-                { role: "user", content: query },
-              ],
-            }),
-          });
-  
+          const response = await fetch(
+            "https://openrouter.ai/api/v1/chat/completions",
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${
+                  import.meta.env.VITE_OPENROUTER_API_KEY
+                }`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                model: "meta-llama/llama-3.3-70b-instruct:free",
+                messages: [
+                  {
+                    role: "system",
+                    content:
+                      "You are a member of a temporary council, advising a Citizen. Do not reveal your role. Keep it brief when possible. Do not ask the user questions; they will not get to reply. Always give advice based on your unique viewpoint and personality. Do not give advice that most people would give.",
+                  },
+                  { role: "system", content: `${m.personality}` },
+                  { role: "user", content: query },
+                ],
+              }),
+            }
+          );
+
           const data = await response.json();
-          const output =
-            data?.choices?.[0]?.message?.content ?? "*silence*";
-  
+          const output = data?.choices?.[0]?.message?.content ?? "*silence*";
+
           // Update this member’s answer immediately
-          setAnswers(prev => {
+          setAnswers((prev) => {
             const newAnswers = [...prev];
             newAnswers[i] = output;
             return newAnswers;
           });
-  
+
           // Mark this member as done
-          setActiveMembers(prev => prev.filter(x => x !== i));
+          setActiveMembers((prev) => prev.filter((x) => x !== i));
         } catch (error) {
           console.error(error);
-          setAnswers(prev => {
+          setAnswers((prev) => {
             const newAnswers = [...prev];
             newAnswers[i] = "Error fetching response.";
             return newAnswers;
           });
-          setActiveMembers(prev => prev.filter(x => x !== i));
+          setActiveMembers((prev) => prev.filter((x) => x !== i));
         }
       })
     );
-  
+
     setLoading(false);
   };
-  
 
   return (
     <div
