@@ -3,7 +3,14 @@ import { Html, Float, Sparkles } from "@react-three/drei";
 import { useRef, useState } from "react";
 import * as THREE from "three";
 
-const CouncilMember = ({
+type CouncilMemberData = {
+  position: THREE.Vector3;
+  color: string;
+  personality: string; // their unique prompt or personality description
+};
+
+
+const CouncilMemberMesh = ({
   position,
   color,
   active,
@@ -51,14 +58,31 @@ const CouncilMember = ({
 };
 
 export default function CouncilChamber() {
-  const members = Array.from({ length: 8 }).map((_, i) => {
+  const members: CouncilMemberData[] = Array.from({ length: 8 }).map((_, i) => {
     const angle = (i / 8) * Math.PI * 2;
     const radius = 4;
-    return new THREE.Vector3(
+    const position = new THREE.Vector3(
       Math.cos(angle) * radius,
       0,
       Math.sin(angle) * radius
     );
+  
+    const personalities = [
+      "You are poetic and cryptic, answering in metaphors.",
+      "You are logical and concise, answering like a scientist.",
+      "You are mischievous and ironic, answering playfully.",
+      "You are empathetic and kind, offering reassurance.",
+      "You are philosophical, pondering the question deeply.",
+      "You are skeptical and contrarian.",
+      "You are optimistic and cheerful.",
+      "You are ancient and wise, speaking in riddles.",
+    ];
+  
+    return {
+      position,
+      color: `hsl(${(i / 8) * 360}, 80%, 60%)`,
+      personality: personalities[i % personalities.length],
+    };
   });
 
   const [query, setQuery] = useState<string>("");
@@ -66,6 +90,7 @@ export default function CouncilChamber() {
 
   const askMember = async function (member: number) {
     console.log("askMember", member);
+    const m = members[member];
     setLoading(true);
     // setResult(""); // clear previous result
     try {
@@ -80,6 +105,10 @@ export default function CouncilChamber() {
           body: JSON.stringify({
             model: "meta-llama/llama-3.3-8b-instruct:free",
             messages: [
+              {
+                role: "system",
+                content: `You are ${m.personality}`,
+              },
               {
                 role: "user",
                 content: query,
@@ -113,10 +142,10 @@ export default function CouncilChamber() {
         <pointLight position={[0, 5, 0]} intensity={2} color="#8ff" />
         <Sparkles count={80} scale={10} size={2} color="#66ccff" speed={0.5} />
         <Float rotationIntensity={0}>
-          {members.map((pos, i) => (
-            <CouncilMember
+          {members.map((member, i) => (
+            <CouncilMemberMesh
               key={i}
-              position={pos}
+              position={member.position}
               color={`hsl(${(i / 8) * 360}, 80%, 60%)`}
               active={i === 0} // simulate one "speaking"
             />
