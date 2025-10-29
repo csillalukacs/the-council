@@ -76,7 +76,7 @@ export default function CouncilChamber() {
   }, []);
 
   const [apiKey, setApiKey] = useState<string | null>(null);
-  const [showKeyInput, setShowKeyInput] = useState(true);
+  const [showKeyInput, setShowKeyInput] = useState(!apiKey);
   const [tempKey, setTempKey] = useState("");
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
@@ -87,7 +87,11 @@ export default function CouncilChamber() {
 
   useEffect(() => {
     const savedKey = localStorage.getItem("openrouter_api_key");
-    if (savedKey) setApiKey(savedKey);
+    if (savedKey) {
+      setApiKey(savedKey);
+      setShowKeyInput(false);
+    }
+    
   }, []);
 
   const saveKey = () => {
@@ -269,6 +273,7 @@ export default function CouncilChamber() {
               }}
             >
               <textarea
+                className="hide-scrollbar"
                 placeholder="the council is listening. what ails you, citizen?"
                 value={query}
                 onChange={(e) => {
@@ -287,7 +292,7 @@ export default function CouncilChamber() {
                   outline: "none",
                   textAlign: "center",
                   fontSize: "16px",
-                  overflow: "scroll",
+                  overflowY: "scroll",
                   resize: "none",
                 }}
               />

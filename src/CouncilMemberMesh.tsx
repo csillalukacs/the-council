@@ -30,7 +30,8 @@ export const CouncilMemberMesh = ({
     const scale = active ? 1 + Math.sin(t * 4) * 0.02 : 1;
     mesh.current.scale.set(scale, scale, scale);
     const intensity = active ? 0.3 + Math.sin(t * 4) * 0.2 : 0.1;
-    (mesh.current.material as THREE.MeshStandardMaterial).emissiveIntensity = intensity;
+    (mesh.current.material as THREE.MeshStandardMaterial).emissiveIntensity =
+      intensity;
   });
 
   return (
@@ -47,6 +48,7 @@ export const CouncilMemberMesh = ({
       </mesh>
       <Html position={[0, 1, 1]} center>
         <div
+          className="hide-scrollbar"
           style={{
             background: "rgba(255,255,255,0.1)",
             border: "1px solid rgba(255,255,255,0.3)",
@@ -59,7 +61,7 @@ export const CouncilMemberMesh = ({
             width: "300px",
             textAlign: "center",
             maxHeight: "200px",
-            overflow: "scroll",
+            overflowY: "scroll",
             display: answer || active ? "block" : "none",
           }}
         >
