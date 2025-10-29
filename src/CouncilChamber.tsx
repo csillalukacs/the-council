@@ -1,5 +1,5 @@
 import { Canvas, useFrame, type Vector3 } from "@react-three/fiber";
-import { Html, Float, Sparkles } from "@react-three/drei";
+import { Html, Float, Sparkles, OrbitControls } from "@react-three/drei";
 import { useMemo, useRef, useState, type JSX } from "react";
 import * as THREE from "three";
 
@@ -49,7 +49,7 @@ const CouncilMemberMesh = ({
           metalness={0.8}
         />
       </mesh>
-      <Html position={[0, 0.8, 0]} center>
+      <Html position={[0, 1, 1]} center>
         <div
           style={{
             background: "rgba(255,255,255,0.1)",
@@ -59,7 +59,7 @@ const CouncilMemberMesh = ({
             color: "white",
             fontSize: "12px",
             backdropFilter: "blur(4px)",
-            minWidth: "80px",
+            width: "200px",
             textAlign: "center",
             display: answer || active ? "block" : "none",
           }}
@@ -244,6 +244,7 @@ export default function CouncilChamber() {
             </button>
           </div>
         </Html>
+        <OrbitControls enablePan={false} />
       </Canvas>
     </div>
   );
