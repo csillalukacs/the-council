@@ -35,8 +35,15 @@ const CouncilMemberMesh = ({
   answer?: string;
 }) => {
   const mesh = useRef<THREE.Mesh>(null!);
-  useFrame((_, delta) => {
-    mesh.current.rotation.y += delta * 0.2;
+  const clock = useRef(new THREE.Clock());
+
+  useFrame(() => {
+    const t = clock.current.getElapsedTime();
+    mesh.current.rotation.y += 0.002; // keep slow spin
+
+    // Pulse when active
+    const scale = active ? 1 + Math.sin(t * 4) * 0.1 : 1;
+    mesh.current.scale.set(scale, scale, scale);
   });
 
   return (
@@ -46,7 +53,7 @@ const CouncilMemberMesh = ({
         <meshStandardMaterial
           color={color}
           emissive={active ? color : "gray"}
-          emissiveIntensity={active ? 1.5 : 0.2}
+          emissiveIntensity={active ? 0.3 : 0.2}
           roughness={0.3}
           metalness={0.8}
         />
@@ -88,7 +95,7 @@ export default function CouncilChamber() {
         );
         const personalities = [
           "You are poetic and cryptic, answering in metaphors.",
-          "You are The Scientist/Analyst - Data-driven, logical, evidence-based. Might be an AI. Offers research, statistics, cognitive frameworks. Removes emotion to see clearly.",
+          "You are The Analyst - Data-driven, logical, evidence-based. Might be an AI. Offers research, statistics, cognitive frameworks. Removes emotion to see clearly.",
           "You are The Challenger - Plays devil's advocate, questions assumptions, pushes back on self-deception. Sometimes uncomfortable but catalyzes growth. 'Are you sure that's really the problem?'",
           "You are The Empath - Deeply attuned to emotions and relationships. Helps the citizen understand their feelings and those of others involved. The emotional translator.",
           "You are philosophical, pondering the question deeply.",
@@ -136,9 +143,13 @@ export default function CouncilChamber() {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              model: "meta-llama/llama-3.3-8b-instruct:free",
+              model: "meta-llama/llama-3.3-70b-instruct:free",
               messages: [
-                { role : "system", content : 'You are a member of a temporary council, advising a Citizen. Do not ask the user questions; they will not get to reply.' },
+                {
+                  role: "system",
+                  content:
+                    "You are a member of a temporary council, advising a Citizen. Do not ask the user questions; they will not get to reply.",
+                },
                 { role: "system", content: `${m.personality}` },
                 { role: "user", content: query },
               ],
