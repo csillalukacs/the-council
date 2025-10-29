@@ -1,12 +1,11 @@
-// CouncilChamber.jsx
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas, useFrame, type Vector3 } from '@react-three/fiber'
 import { OrbitControls, Html, Float, Sparkles } from '@react-three/drei'
 import { useRef } from 'react'
 import * as THREE from 'three'
 
-const CouncilMember = ({ position, color, active }) => {
-  const mesh = useRef()
-  useFrame((state, delta) => {
+const CouncilMember = ({ position, color, active } : { position: Vector3, color: string, active: boolean }) => {
+  const mesh = useRef<THREE.Mesh>(null!)
+  useFrame((_, delta) => {
     mesh.current.rotation.y += delta * 0.2
   })
 
@@ -47,11 +46,11 @@ export default function CouncilChamber() {
   const members = Array.from({ length: 8 }).map((_, i) => {
     const angle = (i / 8) * Math.PI * 2
     const radius = 4
-    return [
+    return new THREE.Vector3(
       Math.cos(angle) * radius,
       0,
       Math.sin(angle) * radius,
-    ]
+    )
   })
 
   return (
