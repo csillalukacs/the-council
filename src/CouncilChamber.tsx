@@ -1,22 +1,34 @@
 import { Canvas, useFrame, type Vector3 } from "@react-three/fiber";
 import { Html, Float, Sparkles } from "@react-three/drei";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState, type JSX } from "react";
 import * as THREE from "three";
 
 type CouncilMemberData = {
   position: THREE.Vector3;
   color: string;
   personality: string;
+  geometryFn: (size: number) => JSX.Element;
 };
+
+const geometries = [
+  (size: number) => <boxGeometry args={[size, size, size]} />,
+  (size: number) => <sphereGeometry args={[size, 32, 32]} />,
+  (size: number) => <tetrahedronGeometry args={[size]} />,
+  (size: number) => <octahedronGeometry args={[size]} />,
+  (size: number) => <dodecahedronGeometry args={[size]} />,
+  (size: number) => <icosahedronGeometry args={[size, 1]} />,
+];
 
 const CouncilMemberMesh = ({
   position,
   color,
+  geometryFn,
   active,
   answer,
 }: {
   position: Vector3;
   color: string;
+  geometryFn: (size: number) => JSX.Element;
   active: boolean;
   answer?: string;
 }) => {
@@ -28,10 +40,10 @@ const CouncilMemberMesh = ({
   return (
     <group position={position}>
       <mesh ref={mesh}>
-        <icosahedronGeometry args={[0.4, 1]} />
+        {geometryFn(0.4)}
         <meshStandardMaterial
           color={color}
-          emissive={active ? color : "blue"}
+          emissive={active ? color : "gray"}
           emissiveIntensity={active ? 1.5 : 0.2}
           roughness={0.3}
           metalness={0.8}
@@ -49,6 +61,7 @@ const CouncilMemberMesh = ({
             backdropFilter: "blur(4px)",
             minWidth: "80px",
             textAlign: "center",
+            display: answer || active ? "block" : "none",
           }}
         >
           {answer ?? (active ? "Thinking..." : "")}
@@ -59,30 +72,38 @@ const CouncilMemberMesh = ({
 };
 
 export default function CouncilChamber() {
-  const members: CouncilMemberData[] = Array.from({ length: 8 }).map((_, i) => {
-    const angle = (i / 8) * Math.PI * 2;
-    const radius = 4;
-    const position = new THREE.Vector3(
-      Math.cos(angle) * radius,
-      0,
-      Math.sin(angle) * radius
-    );
-    const personalities = [
-      "You are poetic and cryptic, answering in metaphors.",
-      "You are logical and concise, answering like a scientist.",
-      "You are mischievous and ironic, answering playfully.",
-      "You are empathetic and kind, offering reassurance.",
-      "You are philosophical, pondering the question deeply.",
-      "You are skeptical and contrarian.",
-      "You are optimistic and cheerful.",
-      "You are ancient and wise, speaking in riddles.",
-    ];
-    return {
-      position,
-      color: `hsl(${(i / 8) * 360}, 80%, 60%)`,
-      personality: personalities[i % personalities.length],
-    };
-  });
+  const members: CouncilMemberData[] = useMemo(
+    () =>
+      Array.from({ length: 8 }).map((_, i) => {
+        const angle = (i / 8) * Math.PI * 2;
+        const radius = 4;
+        const position = new THREE.Vector3(
+          Math.cos(angle) * radius,
+          0,
+          Math.sin(angle) * radius
+        );
+        const personalities = [
+          "You are poetic and cryptic, answering in metaphors.",
+          "You are logical and concise, answering like a scientist.",
+          "You are mischievous and ironic, answering playfully.",
+          "You are empathetic and kind, offering reassurance.",
+          "You are philosophical, pondering the question deeply.",
+          "You are skeptical and contrarian.",
+          "You are optimistic and cheerful.",
+          "You are ancient and wise, speaking in riddles.",
+        ];
+
+        const geometryFn = geometries[i % geometries.length];
+
+        return {
+          position,
+          color: `hsl(${Math.random() * 360}, 70%, 50%)`, // random color
+          personality: personalities[i % personalities.length],
+          geometryFn,
+        };
+      }),
+    []
+  );
 
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
@@ -120,7 +141,7 @@ export default function CouncilChamber() {
           }
         );
         const data = await response.json();
-        const output = data?.choices?.[0]?.message?.content ?? "No response.";
+        const output = data?.choices?.[0]?.message?.content ?? "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
         // Update answer for this member immediately
         setAnswers((prev) => {
@@ -163,6 +184,7 @@ export default function CouncilChamber() {
               color={member.color}
               active={activeMembers.includes(i)}
               answer={answers[i]}
+              geometryFn={member.geometryFn}
             />
           ))}
         </Float>
