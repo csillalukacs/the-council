@@ -3,7 +3,7 @@ import { Html, Float, Sparkles, OrbitControls } from "@react-three/drei";
 import { useMemo, useRef, useState, type JSX } from "react";
 import * as THREE from "three";
 
-const COUNCIL_SIZE = 4;
+const COUNCIL_SIZE = 8;
 
 type CouncilMemberData = {
   position: THREE.Vector3;
@@ -128,18 +128,15 @@ export default function CouncilChamber() {
     setLoading(true);
     setActiveMembers(Array.from({ length: COUNCIL_SIZE }, (_, i) => i));
     setAnswers(Array(members.length).fill(undefined));
-
-    for (let i = 0; i < members.length; i++) {
-      const m = members[i];
-      try {
-        const response = await fetch(
-          "https://openrouter.ai/api/v1/chat/completions",
-          {
+  
+    // Launch all fetches simultaneously
+    await Promise.allSettled(
+      members.map(async (m, i) => {
+        try {
+          const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
             headers: {
-              Authorization: `Bearer ${
-                import.meta.env.VITE_OPENROUTER_API_KEY
-              }`,
+              Authorization: `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
@@ -154,33 +151,36 @@ export default function CouncilChamber() {
                 { role: "user", content: query },
               ],
             }),
-          }
-        );
-        const data = await response.json();
-        const output =
-          data?.choices?.[0]?.message?.content ??
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
-
-        // Update answer for this member immediately
-        setAnswers((prev) => {
-          const newAnswers = [...prev];
-          newAnswers[i] = output;
-          return newAnswers;
-        });
-        setActiveMembers((prev) => prev.filter((x) => x !== i));
-      } catch (error) {
-        console.error(error);
-        setAnswers((prev) => {
-          const newAnswers = [...prev];
-          newAnswers[i] = "Error fetching response.";
-          return newAnswers;
-        });
-      }
-    }
-
-    setActiveMembers([]);
+          });
+  
+          const data = await response.json();
+          const output =
+            data?.choices?.[0]?.message?.content ?? "*silence*";
+  
+          // Update this member’s answer immediately
+          setAnswers(prev => {
+            const newAnswers = [...prev];
+            newAnswers[i] = output;
+            return newAnswers;
+          });
+  
+          // Mark this member as done
+          setActiveMembers(prev => prev.filter(x => x !== i));
+        } catch (error) {
+          console.error(error);
+          setAnswers(prev => {
+            const newAnswers = [...prev];
+            newAnswers[i] = "Error fetching response.";
+            return newAnswers;
+          });
+          setActiveMembers(prev => prev.filter(x => x !== i));
+        }
+      })
+    );
+  
     setLoading(false);
   };
+  
 
   return (
     <div
