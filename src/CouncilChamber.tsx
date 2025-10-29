@@ -3,6 +3,8 @@ import { Html, Float, Sparkles, OrbitControls } from "@react-three/drei";
 import { useMemo, useRef, useState, type JSX } from "react";
 import * as THREE from "three";
 
+const COUNCIL_SIZE = 4;
+
 type CouncilMemberData = {
   position: THREE.Vector3;
   color: string;
@@ -59,8 +61,10 @@ const CouncilMemberMesh = ({
             color: "white",
             fontSize: "12px",
             backdropFilter: "blur(4px)",
-            width: "200px",
+            width: "300px",
             textAlign: "center",
+            maxHeight: "200px",
+            overflow: "scroll",
             display: answer || active ? "block" : "none",
           }}
         >
@@ -74,8 +78,8 @@ const CouncilMemberMesh = ({
 export default function CouncilChamber() {
   const members: CouncilMemberData[] = useMemo(
     () =>
-      Array.from({ length: 8 }).map((_, i) => {
-        const angle = (i / 8) * Math.PI * 2;
+      Array.from({ length: COUNCIL_SIZE }).map((_, i) => {
+        const angle = (i / COUNCIL_SIZE) * Math.PI * 2;
         const radius = 4;
         const position = new THREE.Vector3(
           Math.cos(angle) * radius,
@@ -84,9 +88,9 @@ export default function CouncilChamber() {
         );
         const personalities = [
           "You are poetic and cryptic, answering in metaphors.",
-          "You are logical and concise, answering like a scientist.",
-          "You are mischievous and ironic, answering playfully.",
-          "You are empathetic and kind, offering reassurance.",
+          "You are The Scientist/Analyst - Data-driven, logical, evidence-based. Might be an AI. Offers research, statistics, cognitive frameworks. Removes emotion to see clearly.",
+          "You are The Challenger - Plays devil's advocate, questions assumptions, pushes back on self-deception. Sometimes uncomfortable but catalyzes growth. 'Are you sure that's really the problem?'",
+          "You are The Empath - Deeply attuned to emotions and relationships. Helps the citizen understand their feelings and those of others involved. The emotional translator.",
           "You are philosophical, pondering the question deeply.",
           "You are skeptical and contrarian.",
           "You are optimistic and cheerful.",
@@ -115,7 +119,7 @@ export default function CouncilChamber() {
   const askCouncil = async () => {
     if (!query.trim()) return;
     setLoading(true);
-    setActiveMembers(Array.from({ length: 8 }, (_, i) => i));
+    setActiveMembers(Array.from({ length: COUNCIL_SIZE }, (_, i) => i));
     setAnswers(Array(members.length).fill(undefined));
 
     for (let i = 0; i < members.length; i++) {
@@ -134,6 +138,7 @@ export default function CouncilChamber() {
             body: JSON.stringify({
               model: "meta-llama/llama-3.3-8b-instruct:free",
               messages: [
+                { role : "system", content : 'You are a member of a temporary council, advising a Citizen. Do not ask the user questions; they will not get to reply.' },
                 { role: "system", content: `${m.personality}` },
                 { role: "user", content: query },
               ],
@@ -141,7 +146,9 @@ export default function CouncilChamber() {
           }
         );
         const data = await response.json();
-        const output = data?.choices?.[0]?.message?.content ?? "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+        const output =
+          data?.choices?.[0]?.message?.content ??
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
         // Update answer for this member immediately
         setAnswers((prev) => {
@@ -208,15 +215,26 @@ export default function CouncilChamber() {
               <textarea
                 placeholder="Ask the council..."
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+
+                  // auto-expand logic
+                  const target = e.target;
+                  target.style.height = "auto"; // reset height
+                  target.style.height =
+                    Math.min(target.scrollHeight, window.innerHeight * 0.6) +
+                    "px"; // max 60vh
+                }}
                 style={{
-                  width: "100%",
+                  width: "500px",
                   background: "transparent",
                   border: "none",
                   color: "white",
                   outline: "none",
                   textAlign: "center",
                   fontSize: "16px",
+                  overflow: "scroll",
+                  resize: "none", // prevent manual resizing
                 }}
               />
             </div>
@@ -244,7 +262,7 @@ export default function CouncilChamber() {
             </button>
           </div>
         </Html>
-        <OrbitControls enablePan={false} />
+        <OrbitControls enablePan={false} enableZoom={false} />
       </Canvas>
     </div>
   );
