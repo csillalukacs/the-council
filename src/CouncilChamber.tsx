@@ -316,7 +316,7 @@ export default function CouncilChamber() {
               }}
             >
               {!apiKey
-                ? "enter openrouter api key to ask"
+                ? "enter api key to ask"
                 : loading
                 ? "the council is deliberating..."
                 : "ask the council"}
