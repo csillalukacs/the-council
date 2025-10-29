@@ -13,10 +13,12 @@ const CouncilMemberMesh = ({
   position,
   color,
   active,
+  answer,
 }: {
   position: Vector3;
   color: string;
   active: boolean;
+  answer?: string;
 }) => {
   const mesh = useRef<THREE.Mesh>(null!);
   useFrame((_, delta) => {
@@ -35,23 +37,23 @@ const CouncilMemberMesh = ({
           metalness={0.8}
         />
       </mesh>
-      {active && (
-        <Html position={[0, 0.8, 0]} center>
-          <div
-            style={{
-              background: "rgba(255,255,255,0.1)",
-              border: "1px solid rgba(255,255,255,0.3)",
-              padding: "4px 8px",
-              borderRadius: "6px",
-              color: "white",
-              fontSize: "12px",
-              backdropFilter: "blur(4px)",
-            }}
-          >
-            “Opinion incoming...”
-          </div>
-        </Html>
-      )}
+      <Html position={[0, 0.8, 0]} center>
+        <div
+          style={{
+            background: "rgba(255,255,255,0.1)",
+            border: "1px solid rgba(255,255,255,0.3)",
+            padding: "4px 8px",
+            borderRadius: "6px",
+            color: "white",
+            fontSize: "12px",
+            backdropFilter: "blur(4px)",
+            minWidth: "80px",
+            textAlign: "center",
+          }}
+        >
+          {answer ?? (active ? "Thinking..." : "")}
+        </div>
+      </Html>
     </group>
   );
 };
@@ -65,7 +67,6 @@ export default function CouncilChamber() {
       0,
       Math.sin(angle) * radius
     );
-
     const personalities = [
       "You are poetic and cryptic, answering in metaphors.",
       "You are logical and concise, answering like a scientist.",
@@ -76,7 +77,6 @@ export default function CouncilChamber() {
       "You are optimistic and cheerful.",
       "You are ancient and wise, speaking in riddles.",
     ];
-
     return {
       position,
       color: `hsl(${(i / 8) * 360}, 80%, 60%)`,
@@ -87,44 +87,60 @@ export default function CouncilChamber() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [activeMembers, setActiveMembers] = useState<number[]>([]);
+  const [answers, setAnswers] = useState<(string | undefined)[]>(
+    Array(members.length).fill(undefined)
+  );
 
-  // modified to send to all members at once
   const askCouncil = async () => {
     if (!query.trim()) return;
     setLoading(true);
-    setActiveMembers(Array.from({ length: 8 }, (_, i) => i)); // all thinking
+    setActiveMembers(Array.from({ length: 8 }, (_, i) => i));
+    setAnswers(Array(members.length).fill(undefined));
 
-    try {
-      await Promise.all(
-        members.map(async (m) => {
-          const response = await fetch(
-            "https://openrouter.ai/api/v1/chat/completions",
-            {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                model: "meta-llama/llama-3.3-8b-instruct:free",
-                messages: [
-                  { role: "system", content: `${m.personality}` },
-                  { role: "user", content: query },
-                ],
-              }),
-            }
-          );
-          const data = await response.json();
-          const output = data?.choices?.[0]?.message?.content ?? "No response.";
-          console.log(output);
-        })
-      );
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setActiveMembers([]);
-      setLoading(false);
+    for (let i = 0; i < members.length; i++) {
+      const m = members[i];
+      try {
+        const response = await fetch(
+          "https://openrouter.ai/api/v1/chat/completions",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${
+                import.meta.env.VITE_OPENROUTER_API_KEY
+              }`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              model: "meta-llama/llama-3.3-8b-instruct:free",
+              messages: [
+                { role: "system", content: `${m.personality}` },
+                { role: "user", content: query },
+              ],
+            }),
+          }
+        );
+        const data = await response.json();
+        const output = data?.choices?.[0]?.message?.content ?? "No response.";
+
+        // Update answer for this member immediately
+        setAnswers((prev) => {
+          const newAnswers = [...prev];
+          newAnswers[i] = output;
+          return newAnswers;
+        });
+        setActiveMembers((prev) => prev.filter((x) => x !== i));
+      } catch (error) {
+        console.error(error);
+        setAnswers((prev) => {
+          const newAnswers = [...prev];
+          newAnswers[i] = "Error fetching response.";
+          return newAnswers;
+        });
+      }
     }
+
+    setActiveMembers([]);
+    setLoading(false);
   };
 
   return (
@@ -146,6 +162,7 @@ export default function CouncilChamber() {
               position={member.position}
               color={member.color}
               active={activeMembers.includes(i)}
+              answer={answers[i]}
             />
           ))}
         </Float>
