@@ -6,9 +6,8 @@ import * as THREE from "three";
 type CouncilMemberData = {
   position: THREE.Vector3;
   color: string;
-  personality: string; // their unique prompt or personality description
+  personality: string;
 };
-
 
 const CouncilMemberMesh = ({
   position,
@@ -66,7 +65,7 @@ export default function CouncilChamber() {
       0,
       Math.sin(angle) * radius
     );
-  
+
     const personalities = [
       "You are poetic and cryptic, answering in metaphors.",
       "You are logical and concise, answering like a scientist.",
@@ -77,7 +76,7 @@ export default function CouncilChamber() {
       "You are optimistic and cheerful.",
       "You are ancient and wise, speaking in riddles.",
     ];
-  
+
     return {
       position,
       color: `hsl(${(i / 8) * 360}, 80%, 60%)`,
@@ -85,46 +84,45 @@ export default function CouncilChamber() {
     };
   });
 
-  const [query, setQuery] = useState<string>("");
+  const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
+  const [activeMembers, setActiveMembers] = useState<number[]>([]);
 
-  const askMember = async function (member: number) {
-    console.log("askMember", member);
-    const m = members[member];
+  // modified to send to all members at once
+  const askCouncil = async () => {
+    if (!query.trim()) return;
     setLoading(true);
-    // setResult(""); // clear previous result
+    setActiveMembers(Array.from({ length: 8 }, (_, i) => i)); // all thinking
+
     try {
-      const response = await fetch(
-        "https://openrouter.ai/api/v1/chat/completions",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: "meta-llama/llama-3.3-8b-instruct:free",
-            messages: [
-              {
-                role: "system",
-                content: `You are ${m.personality}`,
+      await Promise.all(
+        members.map(async (m) => {
+          const response = await fetch(
+            "https://openrouter.ai/api/v1/chat/completions",
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
+                "Content-Type": "application/json",
               },
-              {
-                role: "user",
-                content: query,
-              },
-            ],
-          }),
-        }
+              body: JSON.stringify({
+                model: "meta-llama/llama-3.3-8b-instruct:free",
+                messages: [
+                  { role: "system", content: `${m.personality}` },
+                  { role: "user", content: query },
+                ],
+              }),
+            }
+          );
+          const data = await response.json();
+          const output = data?.choices?.[0]?.message?.content ?? "No response.";
+          console.log(output);
+        })
       );
-
-      const data = await response.json();
-      const output = data?.choices?.[0]?.message?.content ?? "No response.";
-
-      console.log(output);
     } catch (error) {
       console.error(error);
     } finally {
+      setActiveMembers([]);
       setLoading(false);
     }
   };
@@ -146,13 +144,12 @@ export default function CouncilChamber() {
             <CouncilMemberMesh
               key={i}
               position={member.position}
-              color={`hsl(${(i / 8) * 360}, 80%, 60%)`}
-              active={i === 0} // simulate one "speaking"
+              color={member.color}
+              active={activeMembers.includes(i)}
             />
           ))}
         </Float>
 
-        {/* Central altar / input placeholder */}
         <Html center position={[0, -1, 0]}>
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             <div
@@ -186,43 +183,28 @@ export default function CouncilChamber() {
             </div>
             <button
               disabled={loading}
+              onClick={askCouncil}
               style={{
                 marginTop: "12px",
                 padding: "8px 16px",
-                background: "rgba(102, 204, 255, 0.15)",
+                background: loading
+                  ? "rgba(102, 204, 255, 0.05)"
+                  : "rgba(102, 204, 255, 0.15)",
                 border: "1px solid rgba(102, 204, 255, 0.4)",
                 borderRadius: "6px",
                 color: "#ccf6ff",
                 fontSize: "14px",
                 letterSpacing: "0.5px",
-                cursor: "pointer",
+                cursor: loading ? "not-allowed" : "pointer",
                 backdropFilter: "blur(6px)",
                 boxShadow: "0 0 12px rgba(102, 204, 255, 0.3)",
-                transition:
-                  "background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease",
+                transition: "all 0.2s ease",
               }}
-              onMouseEnter={(e) => {
-                (e.currentTarget.style.background =
-                  "rgba(102, 204, 255, 0.25)"),
-                  (e.currentTarget.style.boxShadow =
-                    "0 0 16px rgba(102, 204, 255, 0.6)"),
-                  (e.currentTarget.style.transform = "translateY(-1px)");
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget.style.background =
-                  "rgba(102, 204, 255, 0.15)"),
-                  (e.currentTarget.style.boxShadow =
-                    "0 0 12px rgba(102, 204, 255, 0.3)"),
-                  (e.currentTarget.style.transform = "translateY(0)");
-              }}
-              onClick={() => askMember(0)}
             >
-              ask the council
+              {loading ? "the council is deliberating..." : "ask the council"}
             </button>
           </div>
         </Html>
-
-        {/* <OrbitControls enablePan={false} /> */}
       </Canvas>
     </div>
   );
