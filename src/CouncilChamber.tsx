@@ -4,6 +4,7 @@ import { useMemo, useState, useEffect, type JSX } from "react";
 import * as THREE from "three";
 import { CouncilMemberMesh } from "./CouncilMemberMesh";
 import CouncilUI from "./CouncilUI";
+import Settings, { MODEL_OPTIONS } from "./Settings";
 
 const COUNCIL_SIZE = 7;
 
@@ -24,13 +25,6 @@ const geometries = [
   (size: number) => <icosahedronGeometry args={[size, 1]} />,
 ];
 
-// NEW: list of available OpenRouter models
-const MODEL_OPTIONS = [
-  "meta-llama/llama-3.3-70b-instruct:free",
-  "openai/gpt-oss-20b:free",
-  "google/gemma-3n-e2b-it:free",
-  "qwen/qwen-2.5-72b-instruct:free",
-];
 
 export default function CouncilChamber() {
   const members: CouncilMemberData[] = useMemo(() => {
@@ -91,7 +85,6 @@ export default function CouncilChamber() {
 
   // NEW: model selection and settings panel visibility
   const [model, setModel] = useState(MODEL_OPTIONS[0]);
-  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     const savedKey = localStorage.getItem("openrouter_api_key");
@@ -157,13 +150,6 @@ export default function CouncilChamber() {
     setLoading(false);
   };
 
-  // NEW: save model on change
-  const handleModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setModel(value);
-    localStorage.setItem("openrouter_model", value);
-  };
-
   return (
     <div
       style={{
@@ -173,69 +159,7 @@ export default function CouncilChamber() {
         position: "relative",
       }}
     >
-      {/* NEW: Settings button */}
-      <button
-        onClick={() => setShowSettings((s) => !s)}
-        style={{
-          position: "absolute",
-          top: 10,
-          left: 10,
-          zIndex: 10,
-          background: "#222",
-          color: "#fff",
-          border: "1px solid #444",
-          borderRadius: "8px",
-          padding: "6px 10px",
-          cursor: "pointer",
-        }}
-      >
-        ⚙️
-      </button>
-
-      {/* NEW: Settings panel */}
-      {showSettings && (
-        <div
-          style={{
-            position: "absolute",
-            top: 50,
-            left: 10,
-            background: "rgba(20,20,20,0.9)",
-            border: "1px solid #555",
-            borderRadius: "10px",
-            padding: "12px",
-            color: "white",
-            zIndex: 10,
-            width: "220px",
-          }}
-        >
-          <h3 style={{ fontSize: "14px", marginBottom: "6px" }}>
-            Settings
-          </h3>
-          <label style={{ display: "block", fontSize: "13px" }}>
-            Model:
-            <select
-              value={model}
-              onChange={handleModelChange}
-              style={{
-                width: "100%",
-                background: "#111",
-                color: "white",
-                border: "1px solid #444",
-                borderRadius: "5px",
-                marginTop: "4px",
-                padding: "4px",
-              }}
-            >
-              {MODEL_OPTIONS.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-      )}
-
+      <Settings model={model} setModel={setModel} />
       <Canvas camera={{ position: [0, 3, 8], fov: 50 }}>
         <ambientLight intensity={0.3} />
         <pointLight position={[0, 5, 0]} intensity={2} color="#8ff" />
