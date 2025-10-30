@@ -24,6 +24,14 @@ const geometries = [
   (size: number) => <icosahedronGeometry args={[size, 1]} />,
 ];
 
+// NEW: list of available OpenRouter models
+const MODEL_OPTIONS = [
+  "meta-llama/llama-3.3-70b-instruct:free",
+  "openai/gpt-oss-20b:free",
+  "google/gemma-3n-e2b-it:free",
+  "qwen/qwen-2.5-72b-instruct:free",
+];
+
 export default function CouncilChamber() {
   const members: CouncilMemberData[] = useMemo(() => {
     return Array.from({ length: COUNCIL_SIZE }).map((_, i) => {
@@ -43,7 +51,6 @@ export default function CouncilChamber() {
         "You are The Wildcard. You try to distract the citizen if you sense that they are too lost in their own head.",
         "You are The Priest. You provide spiritual guidance and comfort to the citizen. Offers prayers, meditations, and other spiritual practices.",
       ];
-
       const fonts = [
         "Times New Roman",
         "Courier New",
@@ -53,7 +60,6 @@ export default function CouncilChamber() {
         "Georgia",
         "Palatino",
       ];
-
       const colors = [
         "#ff8800",
         "#00ff00",
@@ -63,9 +69,7 @@ export default function CouncilChamber() {
         "#00ffff",
         "#ffffff",
       ];
-
       const geometryFn = geometries[i % geometries.length];
-
       return {
         position,
         font: fonts[i % fonts.length],
@@ -85,12 +89,19 @@ export default function CouncilChamber() {
     Array(members.length).fill(undefined)
   );
 
+  // NEW: model selection and settings panel visibility
+  const [model, setModel] = useState(MODEL_OPTIONS[0]);
+  const [showSettings, setShowSettings] = useState(false);
+
   useEffect(() => {
     const savedKey = localStorage.getItem("openrouter_api_key");
     if (savedKey) {
       setApiKey(savedKey);
       setShowKeyInput(false);
     }
+    // NEW: load saved model
+    const savedModel = localStorage.getItem("openrouter_model");
+    if (savedModel) setModel(savedModel);
   }, []);
 
   const askCouncil = async () => {
@@ -111,7 +122,8 @@ export default function CouncilChamber() {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                model: "meta-llama/llama-3.3-70b-instruct:free",
+                // NEW: use selected model
+                model,
                 messages: [
                   {
                     role: "system",
@@ -124,10 +136,8 @@ export default function CouncilChamber() {
               }),
             }
           );
-
           const data = await response.json();
           const output = data?.choices?.[0]?.message?.content ?? "*silence*";
-
           setAnswers((prev) => {
             const newAnswers = [...prev];
             newAnswers[i] = output;
@@ -144,8 +154,14 @@ export default function CouncilChamber() {
         }
       })
     );
-
     setLoading(false);
+  };
+
+  // NEW: save model on change
+  const handleModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setModel(value);
+    localStorage.setItem("openrouter_model", value);
   };
 
   return (
@@ -154,8 +170,72 @@ export default function CouncilChamber() {
         height: "100vh",
         width: "100vw",
         background: "radial-gradient(circle at center, #111, #000)",
+        position: "relative",
       }}
     >
+      {/* NEW: Settings button */}
+      <button
+        onClick={() => setShowSettings((s) => !s)}
+        style={{
+          position: "absolute",
+          top: 10,
+          left: 10,
+          zIndex: 10,
+          background: "#222",
+          color: "#fff",
+          border: "1px solid #444",
+          borderRadius: "8px",
+          padding: "6px 10px",
+          cursor: "pointer",
+        }}
+      >
+        ⚙️
+      </button>
+
+      {/* NEW: Settings panel */}
+      {showSettings && (
+        <div
+          style={{
+            position: "absolute",
+            top: 50,
+            left: 10,
+            background: "rgba(20,20,20,0.9)",
+            border: "1px solid #555",
+            borderRadius: "10px",
+            padding: "12px",
+            color: "white",
+            zIndex: 10,
+            width: "220px",
+          }}
+        >
+          <h3 style={{ fontSize: "14px", marginBottom: "6px" }}>
+            Settings
+          </h3>
+          <label style={{ display: "block", fontSize: "13px" }}>
+            Model:
+            <select
+              value={model}
+              onChange={handleModelChange}
+              style={{
+                width: "100%",
+                background: "#111",
+                color: "white",
+                border: "1px solid #444",
+                borderRadius: "5px",
+                marginTop: "4px",
+                padding: "4px",
+              }}
+            >
+              {MODEL_OPTIONS.map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+      )}
+
       <Canvas camera={{ position: [0, 3, 8], fov: 50 }}>
         <ambientLight intensity={0.3} />
         <pointLight position={[0, 5, 0]} intensity={2} color="#8ff" />
