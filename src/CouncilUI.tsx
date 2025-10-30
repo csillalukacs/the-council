@@ -1,28 +1,35 @@
 import { Html } from "@react-three/drei";
+import { useState } from "react";
 
 export default function CouncilUI({
   showKeyInput,
   setShowKeyInput,
   apiKey,
-  tempKey,
-  setTempKey,
   query,
   setQuery,
   loading,
   askCouncil,
-  saveKey,
+  setApiKey,
 }: {
   showKeyInput: boolean;
   setShowKeyInput: React.Dispatch<React.SetStateAction<boolean>>;
   apiKey: string | null;
-  tempKey: string;
-  setTempKey: React.Dispatch<React.SetStateAction<string>>;
   query: string;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
   loading: boolean;
   askCouncil: () => Promise<void>;
-  saveKey: () => void;
+  setApiKey: React.Dispatch<React.SetStateAction<string | null>>;
 }) {
+  const [tempKey, setTempKey] = useState("");
+
+  const saveKey = () => {
+    if (tempKey.trim()) {
+      localStorage.setItem("openrouter_api_key", tempKey.trim());
+      setApiKey(tempKey.trim());
+      setShowKeyInput(false);
+    }
+  };
+
   return (
     <Html center position={[0, -1, 0]}>
       <div

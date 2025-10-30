@@ -78,7 +78,6 @@ export default function CouncilChamber() {
 
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [showKeyInput, setShowKeyInput] = useState(!apiKey);
-  const [tempKey, setTempKey] = useState("");
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [activeMembers, setActiveMembers] = useState<number[]>([]);
@@ -93,14 +92,6 @@ export default function CouncilChamber() {
       setShowKeyInput(false);
     }
   }, []);
-
-  const saveKey = () => {
-    if (tempKey.trim()) {
-      localStorage.setItem("openrouter_api_key", tempKey.trim());
-      setApiKey(tempKey.trim());
-      setShowKeyInput(false);
-    }
-  };
 
   const askCouncil = async () => {
     if (!query.trim() || !apiKey) return;
@@ -188,13 +179,11 @@ export default function CouncilChamber() {
           showKeyInput={showKeyInput}
           setShowKeyInput={setShowKeyInput}
           apiKey={apiKey}
-          tempKey={tempKey}
-          setTempKey={setTempKey}
           query={query}
           setQuery={setQuery}
           loading={loading}
           askCouncil={askCouncil}
-          saveKey={saveKey}
+          setApiKey={setApiKey}
         />
 
         <OrbitControls enablePan={false} enableZoom={false} />
