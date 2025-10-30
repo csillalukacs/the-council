@@ -25,7 +25,6 @@ const geometries = [
   (size: number) => <icosahedronGeometry args={[size, 1]} />,
 ];
 
-
 export default function CouncilChamber() {
   const members: CouncilMemberData[] = useMemo(() => {
     return Array.from({ length: COUNCIL_SIZE }).map((_, i) => {
@@ -149,6 +148,23 @@ export default function CouncilChamber() {
     setLoading(false);
   };
 
+  const saveConversation = () => {
+    if (!query.trim()) return;
+    const existing = JSON.parse(
+      localStorage.getItem("council_conversations") || "[]"
+    );
+    const newConversation = {
+      timestamp: new Date().toISOString(),
+      query,
+      answers,
+    };
+    localStorage.setItem(
+      "council_conversations",
+      JSON.stringify([...existing, newConversation])
+    );
+    alert("Conversation saved!");
+  };
+
   return (
     <div
       style={{
@@ -191,6 +207,28 @@ export default function CouncilChamber() {
 
         <OrbitControls enablePan={false} enableZoom={false} />
       </Canvas>
+      <div
+        style={{
+          position: "absolute",
+          bottom: "20px",
+          right: "20px",
+          zIndex: 10,
+        }}
+      >
+        <button
+          onClick={saveConversation}
+          style={{
+            background: "#222",
+            color: "#fff",
+            border: "1px solid #555",
+            borderRadius: "8px",
+            padding: "8px 12px",
+            cursor: "pointer",
+          }}
+        >
+          💾 Save Conversation
+        </button>
+      </div>
     </div>
   );
 }
