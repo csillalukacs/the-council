@@ -1,20 +1,54 @@
-import { useState } from "react";
-
-export const MODEL_OPTIONS = [
-  "meta-llama/llama-3.3-70b-instruct:free",
-  "openai/gpt-oss-20b:free",
-  "google/gemma-3n-e2b-it:free",
-  "qwen/qwen-2.5-72b-instruct:free",
-];
+import { useState, useEffect } from "react";
 
 export default function Settings({
   model,
   setModel,
+  apiKey,
 }: {
   model: string;
   setModel: React.Dispatch<React.SetStateAction<string>>;
+  apiKey: string | null;
 }) {
   const [showSettings, setShowSettings] = useState(false);
+  const [models, setModels] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchModels = async () => {
+      if (!apiKey) return;
+
+      setLoading(true);
+      try {
+        const res = await fetch("https://openrouter.ai/api/v1/models", {
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+          },
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch models");
+        const data = await res.json();
+
+        const freeModels = data.data
+          .filter((m: any) => {
+            const pricing = m.pricing || {};
+            return (
+              m.id.includes(":free") ||
+              pricing.prompt === 0 ||
+              pricing.completion === 0
+            );
+          })
+          .map((m: any) => m.id);
+
+        setModels(freeModels);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchModels();
+  }, [apiKey]);
 
   const handleModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
@@ -54,7 +88,7 @@ export default function Settings({
             padding: "12px",
             color: "white",
             zIndex: 10,
-            width: "220px",
+            width: "250px",
           }}
         >
           <h3 style={{ fontSize: "14px", marginBottom: "6px" }}>Settings</h3>
@@ -73,11 +107,17 @@ export default function Settings({
                 padding: "4px",
               }}
             >
-              {MODEL_OPTIONS.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
+              {loading ? (
+                <option>Loading...</option>
+              ) : models.length > 0 ? (
+                models.map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))
+              ) : (
+                <option>Enter API key to see available models</option>
+              )}
             </select>
           </label>
         </div>

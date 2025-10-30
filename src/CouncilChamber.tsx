@@ -4,7 +4,7 @@ import { useMemo, useState, useEffect, type JSX } from "react";
 import * as THREE from "three";
 import { CouncilMemberMesh } from "./CouncilMemberMesh";
 import CouncilUI from "./CouncilUI";
-import Settings, { MODEL_OPTIONS } from "./Settings";
+import Settings from "./Settings";
 
 const COUNCIL_SIZE = 7;
 
@@ -83,8 +83,7 @@ export default function CouncilChamber() {
     Array(members.length).fill(undefined)
   );
 
-  // NEW: model selection and settings panel visibility
-  const [model, setModel] = useState(MODEL_OPTIONS[0]);
+  const [model, setModel] = useState("meta-llama/llama-3.3-70b-instruct:free");
 
   useEffect(() => {
     const savedKey = localStorage.getItem("openrouter_api_key");
@@ -159,7 +158,7 @@ export default function CouncilChamber() {
         position: "relative",
       }}
     >
-      <Settings model={model} setModel={setModel} />
+      <Settings model={model} setModel={setModel} apiKey={apiKey}/>
       <Canvas camera={{ position: [0, 3, 8], fov: 50 }}>
         <ambientLight intensity={0.3} />
         <pointLight position={[0, 5, 0]} intensity={2} color="#8ff" />
