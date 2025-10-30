@@ -158,7 +158,7 @@ export default function CouncilChamber() {
         position: "relative",
       }}
     >
-      <Settings model={model} setModel={setModel} apiKey={apiKey}/>
+      <Settings model={model} setModel={setModel} />
       <Canvas camera={{ position: [0, 3, 8], fov: 50 }}>
         <ambientLight intensity={0.3} />
         <pointLight position={[0, 5, 0]} intensity={2} color="#8ff" />

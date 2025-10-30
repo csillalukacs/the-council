@@ -1,54 +1,34 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function Settings({
   model,
   setModel,
-  apiKey,
 }: {
   model: string;
   setModel: React.Dispatch<React.SetStateAction<string>>;
-  apiKey: string | null;
 }) {
   const [showSettings, setShowSettings] = useState(false);
-  const [models, setModels] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchModels = async () => {
-      if (!apiKey) return;
-
-      setLoading(true);
-      try {
-        const res = await fetch("https://openrouter.ai/api/v1/models", {
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-          },
-        });
-
-        if (!res.ok) throw new Error("Failed to fetch models");
-        const data = await res.json();
-
-        const freeModels = data.data
-          .filter((m: any) => {
-            const pricing = m.pricing || {};
-            return (
-              m.id.includes(":free") ||
-              pricing.prompt === 0 ||
-              pricing.completion === 0
-            );
-          })
-          .map((m: any) => m.id);
-
-        setModels(freeModels);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchModels();
-  }, [apiKey]);
+  const MODELS = [
+    "minimax/minimax-m2:free",
+    "alibaba/tongyi-deepresearch-30b-a3b:free",
+    "z-ai/glm-4.5-air:free",
+    "cognitivecomputations/dolphin-mistral-24b-venice-edition:free",
+    "tngtech/deepseek-r1t2-chimera:free",
+    "mistralai/devstral-small-2505:free",
+    "meta-llama/llama-3.3-8b-instruct:free",
+    "qwen/qwen3-8b:free",
+    "meta-llama/llama-4-maverick:free",
+    "meta-llama/llama-4-scout:free",
+    "mistralai/mistral-small-3.1-24b-instruct:free",
+    "google/gemma-3-27b-it:free",
+    "cognitivecomputations/dolphin3.0-mistral-24b:free",
+    "deepseek/deepseek-r1-distill-llama-70b:free",
+    "meta-llama/llama-3.3-70b-instruct:free",
+    "qwen/qwen-2.5-coder-32b-instruct:free",
+    "mistralai/mistral-nemo:free",
+    "anthropic/claude-sonnet-4.5",
+  ];
 
   const handleModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
@@ -107,17 +87,11 @@ export default function Settings({
                 padding: "4px",
               }}
             >
-              {loading ? (
-                <option>Loading...</option>
-              ) : models.length > 0 ? (
-                models.map((m) => (
-                  <option key={m} value={m}>
-                    {m}
-                  </option>
-                ))
-              ) : (
-                <option>Enter API key to see available models</option>
-              )}
+              {MODELS.map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
             </select>
           </label>
         </div>
