@@ -31,7 +31,7 @@ export default function CouncilUI({
   };
 
   return (
-    <Html center position={[0, -1, 0]}>
+    <Html center position={[0, -1, 0]} zIndexRange={[0, 100]}>
       <div
         style={{
           display: "flex",
