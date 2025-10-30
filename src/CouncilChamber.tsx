@@ -275,7 +275,7 @@ export default function CouncilChamber() {
               <textarea
                 className="hide-scrollbar"
                 placeholder="the council is listening. what ails you, citizen?"
-                value={query}
+                defaultValue={query}
                 onChange={(e) => {
                   setQuery(e.target.value);
                   const target = e.target;
