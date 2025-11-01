@@ -110,6 +110,18 @@ export default function CouncilChamber() {
   const askCouncil = async () => {
     if (!query.trim() || !apiKey) return;
     setLoading(true);
+    // Immediately create a new conversation entry when question is asked
+    const newConversation = {
+      timestamp: new Date().toISOString(),
+      query,
+      answers: Array(members.length).fill(undefined),
+    };
+    const existing = JSON.parse(
+      localStorage.getItem("council_conversations") || "[]"
+    );
+    existing.push(newConversation);
+    localStorage.setItem("council_conversations", JSON.stringify(existing));
+    const conversationIndex = existing.length - 1;
     setActiveMembers(Array.from({ length: COUNCIL_SIZE }, (_, i) => i));
     setAnswers(Array(members.length).fill(undefined));
 
@@ -144,6 +156,14 @@ export default function CouncilChamber() {
           setAnswers((prev) => {
             const newAnswers = [...prev];
             newAnswers[i] = output;
+          
+            // Auto-update this conversation in localStorage
+            const stored = JSON.parse(localStorage.getItem("council_conversations") || "[]");
+            if (stored[conversationIndex]) {
+              stored[conversationIndex].answers = newAnswers;
+              localStorage.setItem("council_conversations", JSON.stringify(stored));
+            }
+          
             return newAnswers;
           });
           setActiveMembers((prev) => prev.filter((x) => x !== i));
@@ -158,23 +178,6 @@ export default function CouncilChamber() {
       })
     );
     setLoading(false);
-  };
-
-  const saveConversation = () => {
-    if (!query.trim()) return;
-    const existing = JSON.parse(
-      localStorage.getItem("council_conversations") || "[]"
-    );
-    const newConversation = {
-      timestamp: new Date().toISOString(),
-      query,
-      answers,
-    };
-    localStorage.setItem(
-      "council_conversations",
-      JSON.stringify([...existing, newConversation])
-    );
-    alert("Conversation saved!");
   };
 
   return (
@@ -227,19 +230,6 @@ export default function CouncilChamber() {
           zIndex: 10,
         }}
       >
-        <button
-          onClick={saveConversation}
-          style={{
-            background: "#222",
-            color: "#fff",
-            border: "1px solid #555",
-            borderRadius: "8px",
-            padding: "8px 12px",
-            cursor: "pointer",
-          }}
-        >
-          💾 Save Conversation
-        </button>
         <button
           onClick={viewHistory}
           style={{
