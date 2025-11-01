@@ -26,6 +26,16 @@ const geometries = [
   (size: number) => <icosahedronGeometry args={[size, 1]} />,
 ];
 
+export const colors = [
+  "#ff8800",
+  "#00ff00",
+  "#8888ff",
+  "#ffff00",
+  "#ff00ff",
+  "#00ffff",
+  "#ffffff",
+];
+
 export default function CouncilChamber() {
   const members: CouncilMemberData[] = useMemo(() => {
     return Array.from({ length: COUNCIL_SIZE }).map((_, i) => {
@@ -53,15 +63,6 @@ export default function CouncilChamber() {
         "Verdana",
         "Georgia",
         "Palatino",
-      ];
-      const colors = [
-        "#ff8800",
-        "#00ff00",
-        "#8888ff",
-        "#ffff00",
-        "#ff00ff",
-        "#00ffff",
-        "#ffffff",
       ];
       const geometryFn = geometries[i % geometries.length];
       return {

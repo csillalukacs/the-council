@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { colors } from "./CouncilChamber";
 
 export default function History() {
   const [showHistory, setShowHistory] = useState(false);
@@ -112,7 +113,10 @@ export default function History() {
                   <AnimatedCollapse show={!!expanded[i]}>
                     <ul style={{ marginLeft: "20px" }}>
                       {c.answers.map((a, j) => (
-                        <li key={j}>
+                        <li
+                          key={j}
+                          style={{ color: colors[j % colors.length] }}
+                        >
                           <em>Member {j + 1}:</em> {a || "*no response*"}
                         </li>
                       ))}
@@ -139,7 +143,7 @@ function AnimatedCollapse({
 
   useEffect(() => {
     if (ref.current) {
-      setHeight(show ? ref.current.scrollHeight : 0);
+      setHeight(show ? ref.current.scrollHeight + 20 : 0);
     }
   }, [show, children]);
 
