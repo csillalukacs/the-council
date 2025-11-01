@@ -5,6 +5,7 @@ export default function History() {
   const [history, setHistory] = useState<
     { timestamp: string; query: string; answers: (string | undefined)[] }[]
   >([]);
+  const [expanded, setExpanded] = useState<Record<number, boolean>>({});
 
   const viewHistory = () => {
     const saved = JSON.parse(
@@ -12,6 +13,10 @@ export default function History() {
     );
     setHistory(saved);
     setShowHistory(true);
+  };
+
+  const toggleExpand = (index: number) => {
+    setExpanded((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
   return (
@@ -89,19 +94,30 @@ export default function History() {
                     paddingBottom: "10px",
                   }}
                 >
-                  <p>
+                  <p style={{ marginBottom: "6px" }}>
                     <strong>{new Date(c.timestamp).toLocaleString()}</strong>
                   </p>
-                  <p>
-                    <strong>Question:</strong> {c.query}
+                  <p
+                    onClick={() => toggleExpand(i)}
+                    style={{
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                      color: "#ffd700",
+                      marginBottom: expanded[i] ? "10px" : 0,
+                    }}
+                  >
+                    {expanded[i] ? "▼ " : "▶ "} {c.query}
                   </p>
-                  <ul>
-                    {c.answers.map((a, j) => (
-                      <li key={j}>
-                        <em>Member {j + 1}:</em> {a || "*no response*"}
-                      </li>
-                    ))}
-                  </ul>
+
+                  {expanded[i] && (
+                    <ul style={{ marginLeft: "20px" }}>
+                      {c.answers.map((a, j) => (
+                        <li key={j}>
+                          <em>Member {j + 1}:</em> {a || "*no response*"}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               ))
           )}
