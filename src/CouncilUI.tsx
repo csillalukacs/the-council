@@ -1,5 +1,6 @@
 import { Html } from "@react-three/drei";
 import { useState } from "react";
+import HelpButton from "./HelpButton";
 
 export default function CouncilUI({
   showKeyInput,
@@ -10,6 +11,7 @@ export default function CouncilUI({
   loading,
   askCouncil,
   setApiKey,
+  setShowHelp,
 }: {
   showKeyInput: boolean;
   setShowKeyInput: React.Dispatch<React.SetStateAction<boolean>>;
@@ -19,6 +21,7 @@ export default function CouncilUI({
   loading: boolean;
   askCouncil: () => Promise<void>;
   setApiKey: React.Dispatch<React.SetStateAction<string | null>>;
+  setShowHelp: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [tempKey, setTempKey] = useState("");
 
@@ -64,7 +67,7 @@ export default function CouncilUI({
                 border: "none",
                 color: "#ccf6ff",
                 outline: "none",
-                width: "280px",
+                width: "260px",
               }}
             />
             <button
@@ -145,33 +148,37 @@ export default function CouncilUI({
         </div>
 
         {/* Ask button */}
-        <button
-          disabled={loading || !apiKey}
-          onClick={askCouncil}
-          style={{
-            marginTop: "12px",
-            padding: "8px 16px",
-            background:
-              loading || !apiKey
-                ? "rgba(102, 204, 255, 0.05)"
-                : "rgba(102, 204, 255, 0.15)",
-            border: "1px solid rgba(102, 204, 255, 0.4)",
-            borderRadius: "6px",
-            color: "#ccf6ff",
-            fontSize: "14px",
-            letterSpacing: "0.5px",
-            cursor: loading || !apiKey ? "not-allowed" : "pointer",
-            backdropFilter: "blur(6px)",
-            boxShadow: "0 0 12px rgba(102, 204, 255, 0.3)",
-            transition: "all 0.2s ease",
-          }}
-        >
-          {!apiKey
-            ? "enter api key to ask"
-            : loading
-            ? "the council is deliberating..."
-            : "ask the council"}
-        </button>
+        <span>
+          <button
+            disabled={loading || !apiKey}
+            onClick={askCouncil}
+            style={{
+              marginTop: "12px",
+              margin: "10px",
+              padding: "8px 16px",
+              background:
+                loading || !apiKey
+                  ? "rgba(102, 204, 255, 0.05)"
+                  : "rgba(102, 204, 255, 0.15)",
+              border: "1px solid rgba(102, 204, 255, 0.4)",
+              borderRadius: "6px",
+              color: "#ccf6ff",
+              fontSize: "14px",
+              letterSpacing: "0.5px",
+              cursor: loading || !apiKey ? "not-allowed" : "pointer",
+              backdropFilter: "blur(6px)",
+              boxShadow: "0 0 12px rgba(102, 204, 255, 0.3)",
+              transition: "all 0.2s ease",
+            }}
+          >
+            {!apiKey
+              ? "enter api key to ask"
+              : loading
+              ? "the council is deliberating..."
+              : "ask the council"}
+          </button>
+          {!apiKey && <HelpButton setShowHelp={setShowHelp} />}
+        </span>
       </div>
     </Html>
   );

@@ -6,6 +6,7 @@ import { CouncilMemberMesh } from "./CouncilMemberMesh";
 import CouncilUI from "./CouncilUI";
 import Settings from "./Settings";
 import History from "./History";
+import Help from "./Help";
 
 const COUNCIL_SIZE = 7;
 
@@ -80,6 +81,7 @@ export default function CouncilChamber() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [activeMembers, setActiveMembers] = useState<number[]>([]);
+  const [showHelp, setShowHelp] = useState(false);
   const [answers, setAnswers] = useState<(string | undefined)[]>(
     Array(members.length).fill(undefined)
   );
@@ -146,14 +148,19 @@ export default function CouncilChamber() {
           setAnswers((prev) => {
             const newAnswers = [...prev];
             newAnswers[i] = output;
-          
+
             // Auto-update this conversation in localStorage
-            const stored = JSON.parse(localStorage.getItem("council_conversations") || "[]");
+            const stored = JSON.parse(
+              localStorage.getItem("council_conversations") || "[]"
+            );
             if (stored[conversationIndex]) {
               stored[conversationIndex].answers = newAnswers;
-              localStorage.setItem("council_conversations", JSON.stringify(stored));
+              localStorage.setItem(
+                "council_conversations",
+                JSON.stringify(stored)
+              );
             }
-          
+
             return newAnswers;
           });
           setActiveMembers((prev) => prev.filter((x) => x !== i));
@@ -208,10 +215,11 @@ export default function CouncilChamber() {
           loading={loading}
           askCouncil={askCouncil}
           setApiKey={setApiKey}
+          setShowHelp={setShowHelp}
         />
-
         <OrbitControls enablePan={false} enableZoom={false} />
       </Canvas>
+      {showHelp && <Help setShowHelp={setShowHelp} />}
       <History />
     </div>
   );
