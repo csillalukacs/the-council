@@ -46,7 +46,7 @@ export const CouncilMemberMesh = ({
           metalness={0.8}
         />
       </mesh>
-      <Html position={[0, 1, 1]} center>
+      <Html position={[0, 1, 1]} center zIndexRange={[0, 100]}>
         <div
           className="hide-scrollbar"
           style={{
