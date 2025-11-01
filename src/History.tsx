@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function History() {
   const [showHistory, setShowHistory] = useState(false);
@@ -103,13 +103,13 @@ export default function History() {
                       cursor: "pointer",
                       fontWeight: "bold",
                       color: "#ffd700",
-                      marginBottom: expanded[i] ? "10px" : 0,
+                      marginBottom: "8px",
                     }}
                   >
                     {expanded[i] ? "▼ " : "▶ "} {c.query}
                   </p>
 
-                  {expanded[i] && (
+                  <AnimatedCollapse show={!!expanded[i]}>
                     <ul style={{ marginLeft: "20px" }}>
                       {c.answers.map((a, j) => (
                         <li key={j}>
@@ -117,12 +117,41 @@ export default function History() {
                         </li>
                       ))}
                     </ul>
-                  )}
+                  </AnimatedCollapse>
                 </div>
               ))
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+function AnimatedCollapse({
+  show,
+  children,
+}: {
+  show: boolean;
+  children: React.ReactNode;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState(0);
+
+  useEffect(() => {
+    if (ref.current) {
+      setHeight(show ? ref.current.scrollHeight : 0);
+    }
+  }, [show, children]);
+
+  return (
+    <div
+      style={{
+        overflow: "hidden",
+        transition: "height 0.3s ease",
+        height,
+      }}
+    >
+      <div ref={ref}>{children}</div>
     </div>
   );
 }
