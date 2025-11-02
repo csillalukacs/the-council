@@ -86,7 +86,9 @@ export default function CouncilChamber() {
     Array(members.length).fill(undefined)
   );
 
-  const [model, setModel] = useState("meta-llama/llama-3.3-70b-instruct:free");
+  const [models, setModels] = useState<string[]>(
+    Array(COUNCIL_SIZE).fill("meta-llama/llama-3.3-70b-instruct:free")
+  );
 
   useEffect(() => {
     const savedKey = localStorage.getItem("openrouter_api_key");
@@ -94,9 +96,12 @@ export default function CouncilChamber() {
       setApiKey(savedKey);
       setShowKeyInput(false);
     }
-    // NEW: load saved model
-    const savedModel = localStorage.getItem("openrouter_model");
-    if (savedModel) setModel(savedModel);
+
+    const savedModels = JSON.parse(
+      localStorage.getItem("openrouter_models") || "[]"
+    );
+    if (Array.isArray(savedModels) && savedModels.length === COUNCIL_SIZE)
+      setModels(savedModels);
   }, []);
 
   const askCouncil = async () => {
@@ -130,7 +135,7 @@ export default function CouncilChamber() {
               },
               body: JSON.stringify({
                 // NEW: use selected model
-                model,
+                model: models[i], // per-member model
                 messages: [
                   {
                     role: "system",
@@ -186,7 +191,7 @@ export default function CouncilChamber() {
         position: "relative",
       }}
     >
-      <Settings model={model} setModel={setModel} />
+      <Settings models={models} setModels={setModels} members={members} />
       <Canvas camera={{ position: [0, 3, 8], fov: 50 }}>
         <ambientLight intensity={0.3} />
         <pointLight position={[0, 5, 0]} intensity={2} color="#8ff" />

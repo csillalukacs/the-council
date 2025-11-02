@@ -1,11 +1,13 @@
 import { useState } from "react";
 
 export default function Settings({
-  model,
-  setModel,
+  models,
+  setModels,
+  members,
 }: {
-  model: string;
-  setModel: React.Dispatch<React.SetStateAction<string>>;
+  models: string[];
+  setModels: React.Dispatch<React.SetStateAction<string[]>>;
+  members: { color: string }[];
 }) {
   const [showSettings, setShowSettings] = useState(false);
 
@@ -30,10 +32,13 @@ export default function Settings({
     "anthropic/claude-sonnet-4.5",
   ];
 
-  const handleModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setModel(value);
-    localStorage.setItem("openrouter_model", value);
+  const handleModelChange = (index: number, value: string) => {
+    setModels((prev) => {
+      const updated = [...prev];
+      updated[index] = value;
+      localStorage.setItem("openrouter_models", JSON.stringify(updated));
+      return updated;
+    });
   };
 
   return (
@@ -69,31 +74,52 @@ export default function Settings({
             color: "white",
             zIndex: 10,
             width: "250px",
+            maxHeight: "80vh",
+            overflowY: "auto",
           }}
         >
-          <h3 style={{ fontSize: "14px", marginBottom: "6px" }}>Settings</h3>
-          <label style={{ display: "block", fontSize: "13px" }}>
-            Model:
-            <select
-              value={model}
-              onChange={handleModelChange}
+          <h3 style={{ fontSize: "14px", marginBottom: "8px" }}>
+            Models:
+          </h3>
+          {members.map((m, i) => (
+            <div
+              key={i}
               style={{
-                width: "100%",
-                background: "#111",
-                color: "white",
-                border: "1px solid #444",
-                borderRadius: "5px",
-                marginTop: "4px",
-                padding: "4px",
+                fontSize: "12px",
+                marginBottom: "8px",
               }}
             >
-              {MODELS.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
-          </label>
+              <span
+                style={{
+                  color: m.color,
+                  fontWeight: "bold",
+                  marginRight: "4px",
+                  width: "10%",
+                }}
+              >
+                ●
+              </span>
+              <select
+                value={models[i]}
+                onChange={(e) => handleModelChange(i, e.target.value)}
+                style={{
+                  width: "90%",
+                  background: "#111",
+                  color: "white",
+                  border: "1px solid #444",
+                  borderRadius: "5px",
+                  marginTop: "4px",
+                  padding: "4px",
+                }}
+              >
+                {MODELS.map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ))}
         </div>
       )}
     </>
