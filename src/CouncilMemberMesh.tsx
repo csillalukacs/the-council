@@ -3,6 +3,7 @@ import { useFrame } from "@react-three/fiber";
 import { useRef, type JSX } from "react";
 import type { Vector3 } from "three";
 import * as THREE from "three";
+import { SCENE_CONFIG } from "./constants";
 
 export const CouncilMemberMesh = ({
   position,
@@ -37,7 +38,7 @@ export const CouncilMemberMesh = ({
   return (
     <group position={position}>
       <mesh ref={mesh}>
-        {geometryFn(0.8)}
+        {geometryFn(SCENE_CONFIG.MEMBER.size)}
         <meshStandardMaterial
           color={color}
           emissive={active ? color : "gray"}

@@ -27,9 +27,9 @@ export default function CouncilUI({
 
   const saveKey = () => {
     if (tempKey.trim()) {
-      localStorage.setItem("openrouter_api_key", tempKey.trim());
       setApiKey(tempKey.trim());
       setShowKeyInput(false);
+      setTempKey("");
     }
   };
 
