@@ -112,6 +112,7 @@ export default function CouncilChamber() {
       timestamp: new Date().toISOString(),
       query,
       answers: Array(members.length).fill(undefined),
+      models: [...models], // Save the models used for this conversation
     };
     const existing = JSON.parse(
       localStorage.getItem("council_conversations") || "[]"

@@ -4,7 +4,12 @@ import { colors } from "./CouncilChamber";
 export default function History() {
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState<
-    { timestamp: string; query: string; answers: (string | undefined)[] }[]
+    {
+      timestamp: string;
+      query: string;
+      answers: (string | undefined)[];
+      models?: string[];
+    }[]
   >([]);
   const [expanded, setExpanded] = useState<Record<number, boolean>>({});
 
@@ -112,14 +117,27 @@ export default function History() {
 
                   <AnimatedCollapse show={!!expanded[i]}>
                     <ul style={{ marginLeft: "20px" }}>
-                      {c.answers.map((a, j) => (
-                        <li
-                          key={j}
-                          style={{ color: colors[j % colors.length] }}
-                        >
-                          <em>Member {j + 1}:</em> {a || "*no response*"}
-                        </li>
-                      ))}
+                      {c.answers.map((a, j) => {
+                        const model = c.models?.[j] || "unknown model";
+                        return (
+                          <li
+                            key={j}
+                            style={{ color: colors[j % colors.length] }}
+                          >
+                            <em>Member {j + 1}</em>{" "}
+                            <span
+                              style={{
+                                fontSize: "0.85em",
+                                opacity: 0.7,
+                                fontStyle: "italic",
+                              }}
+                            >
+                              ({model})
+                            </span>
+                            : {a || "*no response*"}
+                          </li>
+                        );
+                      })}
                     </ul>
                   </AnimatedCollapse>
                 </div>
