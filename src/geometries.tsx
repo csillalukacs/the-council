@@ -5,5 +5,5 @@ export const GEOMETRIES = [
   (size: number) => <tetrahedronGeometry args={[size]} />,
   (size: number) => <octahedronGeometry args={[size]} />,
   (size: number) => <dodecahedronGeometry args={[size]} />,
-  (size: number) => <icosahedronGeometry args={[size, 1]} />,
+  (size: number) => <icosahedronGeometry args={[size]} />,
 ] as const;
