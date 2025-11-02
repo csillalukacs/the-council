@@ -31,11 +31,12 @@ export default function CouncilChamber() {
     prevApiKeyRef.current = apiKey;
   }, [apiKey]);
 
-  const { loading, answers, activeMembers, askCouncil } = useCouncilApi({
-    apiKey,
-    models,
-    members,
-  });
+  const { loading, answers, activeMembers, askCouncil, retryMember } =
+    useCouncilApi({
+      apiKey,
+      models,
+      members,
+    });
 
   const handleAskCouncil = async () => {
     await askCouncil(query);
@@ -78,6 +79,7 @@ export default function CouncilChamber() {
               answer={answers[i]}
               geometryFn={member.geometryFn}
               font={member.font}
+              onRetry={() => retryMember(i)}
             />
           ))}
         </Float>

@@ -13,6 +13,7 @@ export const CouncilMemberMesh = ({
   active,
   answer,
   font,
+  onRetry,
 }: {
   position: Vector3;
   color: string;
@@ -21,6 +22,7 @@ export const CouncilMemberMesh = ({
   active: boolean;
   answer?: string;
   font: string;
+  onRetry?: () => void;
 }) => {
   const mesh = useRef<THREE.Mesh>(null!);
   const clock = useRef(new THREE.Clock());
@@ -66,9 +68,50 @@ export const CouncilMemberMesh = ({
             maxHeight: "200px",
             overflowY: "scroll",
             display: answer || active ? "block" : "none",
+            position: "relative",
           }}
         >
           {answer ?? (active ? "Thinking..." : "")}
+          {(answer === "Error fetching response." || answer === "*silence*") &&
+            onRetry && (
+              <button
+                onClick={onRetry}
+                style={{
+                  position: "absolute",
+                  bottom: "4px",
+                  right: "4px",
+                  padding: "4px",
+                  background: "rgba(102, 204, 255, 0.15)",
+                  border: "1px solid rgba(102, 204, 255, 0.4)",
+                  borderRadius: "4px",
+                  color: "#ccf6ff",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "20px",
+                  height: "20px",
+                  transition: "all 0.2s ease",
+                }}
+                title="Retry"
+              >
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                  <path d="M21 3v5h-5" />
+                  <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                  <path d="M3 21v-5h5" />
+                </svg>
+              </button>
+            )}
         </div>
       </Html>
     </group>
