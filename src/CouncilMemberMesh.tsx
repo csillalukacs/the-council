@@ -8,6 +8,7 @@ import { SCENE_CONFIG } from "./constants";
 export const CouncilMemberMesh = ({
   position,
   color,
+  textColor,
   geometryFn,
   active,
   answer,
@@ -15,6 +16,7 @@ export const CouncilMemberMesh = ({
 }: {
   position: Vector3;
   color: string;
+  textColor: string;
   geometryFn: (size: number) => JSX.Element;
   active: boolean;
   answer?: string;
@@ -55,7 +57,7 @@ export const CouncilMemberMesh = ({
             border: "1px solid rgba(255,255,255,0.3)",
             padding: "4px 8px",
             borderRadius: "6px",
-            color: color,
+            color: textColor,
             fontSize: "13px",
             fontFamily: font,
             backdropFilter: "blur(4px)",

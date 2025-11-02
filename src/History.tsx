@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import Modal from "./components/Modal";
-import { COLORS, STORAGE_KEYS } from "./constants";
+import { TEXT_COLORS, STORAGE_KEYS } from "./constants";
 
 export default function History() {
   const [showHistory, setShowHistory] = useState(false);
@@ -118,7 +118,7 @@ export default function History() {
                           <li
                             key={j}
                             style={{
-                              color: COLORS[j % COLORS.length],
+                              color: TEXT_COLORS[j % TEXT_COLORS.length],
                               marginBottom: "6px",
                               fontSize: "13px",
                               lineHeight: "1.4",

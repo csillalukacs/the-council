@@ -4,6 +4,7 @@ import type { JSX } from "react";
 import {
   COUNCIL_SIZE,
   COLORS,
+  TEXT_COLORS,
   PERSONALITIES,
   FONTS,
   SCENE_CONFIG,
@@ -13,6 +14,7 @@ import { GEOMETRIES } from "../geometries";
 export type CouncilMemberData = {
   position: THREE.Vector3;
   color: string;
+  textColor: string;
   personality: string;
   geometryFn: (size: number) => JSX.Element;
   font: string;
@@ -32,6 +34,7 @@ export function useCouncilMembers(): CouncilMemberData[] {
         position,
         font: FONTS[i % FONTS.length],
         color: COLORS[i % COLORS.length],
+        textColor: TEXT_COLORS[i % TEXT_COLORS.length],
         personality: PERSONALITIES[i % PERSONALITIES.length],
         geometryFn: GEOMETRIES[i % GEOMETRIES.length],
       };

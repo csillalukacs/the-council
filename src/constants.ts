@@ -1,7 +1,7 @@
 // Council configuration
 export const COUNCIL_SIZE = 7;
 
-// Member colors
+// Member colors (for 3D meshes)
 export const COLORS = [
   "#ff8800",
   "#00ff00",
@@ -10,6 +10,17 @@ export const COLORS = [
   "#ff00ff",
   "#00ffff",
   "#ffffff",
+] as const;
+
+// Text colors (muted, harmonious)
+export const TEXT_COLORS = [
+  "#d59980", // muted terracotta
+  "#b4ff99", // brighter neon green
+  "#aab5e8", // muted periwinkle blue
+  "#e5d496", // muted gold
+  "#d9a1c8", // muted rose
+  "#9bc5c5", // muted teal
+  "#e0e0e0", // soft gray
 ] as const;
 
 // Member personalities

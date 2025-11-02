@@ -61,6 +61,7 @@ export default function CouncilChamber() {
               key={i}
               position={member.position}
               color={member.color}
+              textColor={member.textColor}
               active={activeMembers.includes(i)}
               answer={answers[i]}
               geometryFn={member.geometryFn}
