@@ -1,6 +1,6 @@
 import { Canvas } from "@react-three/fiber";
 import { Float, Sparkles, OrbitControls } from "@react-three/drei";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { CouncilMemberMesh } from "./CouncilMemberMesh";
 import CouncilUI from "./CouncilUI";
 import Settings from "./Settings";
@@ -15,9 +15,21 @@ export default function CouncilChamber() {
   const members = useCouncilMembers();
   const [apiKey, setApiKey] = useApiKey();
   const [models, setModels] = useModels();
-  const [showKeyInput, setShowKeyInput] = useState(!apiKey);
+  const [showKeyInput, setShowKeyInput] = useState(false);
   const [query, setQuery] = useState("");
   const [showHelp, setShowHelp] = useState(false);
+  const prevApiKeyRef = useRef<string | null>(null);
+
+  // Update showKeyInput based on whether API key exists
+  // Only hide input when API key loads initially (transitions from null to non-null)
+  // Don't interfere when user explicitly clicks "edit key"
+  useEffect(() => {
+    if (apiKey && prevApiKeyRef.current === null) {
+      // API key just loaded from localStorage, hide the input
+      setShowKeyInput(false);
+    }
+    prevApiKeyRef.current = apiKey;
+  }, [apiKey]);
 
   const { loading, answers, activeMembers, askCouncil } = useCouncilApi({
     apiKey,

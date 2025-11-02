@@ -1,5 +1,5 @@
 import { Html } from "@react-three/drei";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import HelpButton from "./HelpButton";
 
 export default function CouncilUI({
@@ -25,6 +25,16 @@ export default function CouncilUI({
 }) {
   const [tempKey, setTempKey] = useState("");
 
+  // When user clicks "edit key", populate the input with the existing API key
+  useEffect(() => {
+    if (showKeyInput && apiKey) {
+      setTempKey(apiKey);
+    } else if (!showKeyInput) {
+      // Clear tempKey when input is hidden
+      setTempKey("");
+    }
+  }, [showKeyInput, apiKey]);
+
   const saveKey = () => {
     if (tempKey.trim()) {
       setApiKey(tempKey.trim());
@@ -44,7 +54,7 @@ export default function CouncilUI({
         }}
       >
         {/* API Key UI */}
-        {showKeyInput ? (
+        {showKeyInput || !apiKey ? (
           <div
             style={{
               display: "flex",
