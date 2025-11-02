@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { STYLES, COLORS, SPACING, RADIUS, TYPOGRAPHY } from "../theme";
 
 interface ModalProps {
   isOpen: boolean;
@@ -44,18 +45,7 @@ export default function Modal({
 
   return (
     <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100vw",
-        height: "100vh",
-        background: "rgba(0,0,0,0.7)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 100,
-      }}
+      style={STYLES.modalOverlay}
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -65,17 +55,9 @@ export default function Modal({
         ref={modalContentRef}
         onClick={(e) => e.stopPropagation()}
         style={{
+          ...STYLES.modalContent,
           width: maxWidth,
           maxHeight: "90vh",
-          background: "rgba(15,25,35,0.95)",
-          border: "1px solid rgba(102,204,255,0.4)",
-          borderRadius: "10px",
-          color: "#ccf6ff",
-          overflowY: "auto",
-          padding: "24px",
-          boxShadow: "0 0 20px rgba(102,204,255,0.3)",
-          backdropFilter: "blur(6px)",
-          position: "relative",
         }}
       >
         {showCloseButton && (
@@ -83,15 +65,13 @@ export default function Modal({
             onClick={onClose}
             style={{
               position: "absolute",
-              top: "16px",
-              right: "16px",
-              background: "rgba(102,204,255,0.15)",
-              color: "#ccf6ff",
-              border: "1px solid rgba(102,204,255,0.4)",
-              borderRadius: "6px",
-              padding: "6px 10px",
+              top: SPACING.xl,
+              right: SPACING.xl,
+              ...STYLES.glassMedium,
+              borderRadius: RADIUS.md,
+              color: COLORS.primaryText,
+              padding: `${SPACING.sm} ${SPACING.md}`,
               cursor: "pointer",
-              backdropFilter: "blur(6px)",
             }}
             aria-label="Close modal"
           >
@@ -101,7 +81,10 @@ export default function Modal({
         {title && (
           <h2
             id="modal-title"
-            style={{ marginBottom: "16px", fontSize: "20px" }}
+            style={{
+              marginBottom: SPACING.xl,
+              fontSize: TYPOGRAPHY.fontSize.xxl,
+            }}
           >
             {title}
           </h2>
@@ -111,4 +94,3 @@ export default function Modal({
     </div>
   );
 }
-

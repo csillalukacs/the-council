@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Modal from "./components/Modal";
 import { AVAILABLE_MODELS, STORAGE_KEYS } from "./constants";
+import { SPACING, TYPOGRAPHY, RADIUS } from "./theme";
 
 export default function Settings({
   models,
@@ -32,8 +33,8 @@ export default function Settings({
           background: "#222",
           color: "#fff",
           border: "1px solid #444",
-          borderRadius: "8px",
-          padding: "6px 10px",
+          borderRadius: RADIUS.lg,
+          padding: `${SPACING.sm} ${SPACING.md}`,
           cursor: "pointer",
         }}
         aria-label="Open settings"
@@ -47,20 +48,20 @@ export default function Settings({
         title="Models"
         maxWidth="300px"
       >
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: SPACING.lg }}>
           {members.map((m, i) => (
             <div
               key={i}
               style={{
-                fontSize: "12px",
+                fontSize: TYPOGRAPHY.fontSize.sm,
               }}
             >
-              <div style={{ marginBottom: "4px" }}>
+              <div style={{ marginBottom: SPACING.xs }}>
                 <span
                   style={{
                     color: m.color,
-                    fontWeight: "bold",
-                    marginRight: "4px",
+                    fontWeight: TYPOGRAPHY.fontWeight.bold,
+                    marginRight: SPACING.xs,
                   }}
                 >
                   ●
@@ -75,8 +76,8 @@ export default function Settings({
                   background: "#111",
                   color: "white",
                   border: "1px solid #444",
-                  borderRadius: "5px",
-                  padding: "4px",
+                  borderRadius: RADIUS.sm,
+                  padding: SPACING.xs,
                 }}
               >
                 {AVAILABLE_MODELS.map((model) => (

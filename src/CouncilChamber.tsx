@@ -10,6 +10,7 @@ import { useCouncilMembers } from "./hooks/useCouncilMembers";
 import { useCouncilApi } from "./hooks/useCouncilApi";
 import { useApiKey, useModels } from "./hooks/useLocalStorage";
 import { SCENE_CONFIG } from "./constants";
+import { COLORS } from "./theme";
 
 export default function CouncilChamber() {
   const members = useCouncilMembers();
@@ -47,7 +48,7 @@ export default function CouncilChamber() {
       style={{
         height: "100vh",
         width: "100vw",
-        background: "radial-gradient(circle at center, #111, #000)",
+        background: COLORS.bgGradient,
         position: "relative",
       }}
     >

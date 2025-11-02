@@ -1,4 +1,5 @@
 import Modal from "./components/Modal";
+import { STYLES, COLORS, SPACING, TYPOGRAPHY } from "./theme";
 
 export default function Help({
   setShowHelp,
@@ -8,16 +9,18 @@ export default function Help({
   return (
     <Modal isOpen={true} onClose={() => setShowHelp(false)} maxWidth="420px">
       <div style={{ textAlign: "center", lineHeight: 1.5 }}>
-        <h3 style={{ marginBottom: "8px", fontSize: "18px" }}>
+        <h3
+          style={{ marginBottom: SPACING.md, fontSize: TYPOGRAPHY.fontSize.xl }}
+        >
           How to get an OpenRouter API Key:
         </h3>
-        <p style={{ fontSize: "14px" }}>
+        <p style={{ fontSize: TYPOGRAPHY.fontSize.base }}>
           1. Visit{" "}
           <a
             href="https://openrouter.ai"
             target="_blank"
             rel="noreferrer"
-            style={{ color: "#80eaff" }}
+            style={{ color: COLORS.primaryDark }}
           >
             openrouter.ai
           </a>
@@ -29,7 +32,7 @@ export default function Help({
             href="https://openrouter.ai/settings/keys"
             target="_blank"
             rel="noreferrer"
-            style={{ color: "#80eaff" }}
+            style={{ color: COLORS.primaryDark }}
           >
             API keys page
           </a>{" "}
@@ -44,13 +47,9 @@ export default function Help({
         <button
           onClick={() => setShowHelp(false)}
           style={{
-            marginTop: "12px",
-            padding: "6px 12px",
-            background: "rgba(102,204,255,0.15)",
-            border: "1px solid rgba(102,204,255,0.4)",
-            borderRadius: "6px",
-            color: "#ccf6ff",
-            cursor: "pointer",
+            marginTop: SPACING.lg,
+            padding: `${SPACING.sm} ${SPACING.lg}`,
+            ...STYLES.glassMedium,
           }}
         >
           Got it

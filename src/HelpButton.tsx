@@ -1,3 +1,5 @@
+import { STYLES, TYPOGRAPHY, COLORS, SPACING } from "./theme";
+
 export default function HelpButton({
   setShowHelp,
 }: {
@@ -10,13 +12,12 @@ export default function HelpButton({
       }}
       title="How to get API key"
       style={{
-        background: "rgba(102,204,255,0.1)",
-        border: "1px solid rgba(102,204,255,0.4)",
+        ...STYLES.glass,
         borderRadius: "10%",
-        color: "#ccf6ff",
+        color: COLORS.primaryText,
         cursor: "pointer",
-        fontWeight: "bold",
-        padding: "6px 12px",
+        fontWeight: TYPOGRAPHY.fontWeight.bold,
+        padding: `${SPACING.sm} ${SPACING.lg}`,
         zIndex: 150,
       }}
     >

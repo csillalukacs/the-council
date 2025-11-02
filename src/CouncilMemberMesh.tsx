@@ -4,6 +4,7 @@ import { useRef, type JSX } from "react";
 import type { Vector3 } from "three";
 import * as THREE from "three";
 import { SCENE_CONFIG } from "./constants";
+import { STYLES, SPACING, TYPOGRAPHY } from "./theme";
 
 export const CouncilMemberMesh = ({
   position,
@@ -55,14 +56,10 @@ export const CouncilMemberMesh = ({
         <div
           className="hide-scrollbar"
           style={{
-            background: "rgba(255,255,255,0.1)",
-            border: "1px solid rgba(255,255,255,0.3)",
-            padding: "4px 8px",
-            borderRadius: "6px",
+            ...STYLES.textBubble,
             color: textColor,
-            fontSize: "13px",
+            fontSize: TYPOGRAPHY.fontSize.md,
             fontFamily: font,
-            backdropFilter: "blur(4px)",
             width: "300px",
             textAlign: "center",
             maxHeight: "200px",
@@ -78,20 +75,15 @@ export const CouncilMemberMesh = ({
                 onClick={onRetry}
                 style={{
                   position: "absolute",
-                  bottom: "4px",
-                  right: "4px",
-                  padding: "4px",
-                  background: "rgba(102, 204, 255, 0.15)",
-                  border: "1px solid rgba(102, 204, 255, 0.4)",
-                  borderRadius: "4px",
-                  color: "#ccf6ff",
-                  cursor: "pointer",
+                  bottom: SPACING.xs,
+                  right: SPACING.xs,
+                  padding: SPACING.xs,
+                  ...STYLES.glassMedium,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   width: "20px",
                   height: "20px",
-                  transition: "all 0.2s ease",
                 }}
                 title="Retry"
               >

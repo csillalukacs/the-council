@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import Modal from "./components/Modal";
 import { TEXT_COLORS, STORAGE_KEYS } from "./constants";
+import { STYLES, COLORS, SPACING, TYPOGRAPHY } from "./theme";
 
 export default function History() {
   const [showHistory, setShowHistory] = useState(false);
@@ -39,14 +40,9 @@ export default function History() {
         <button
           onClick={viewHistory}
           style={{
-            background: "rgba(102,204,255,0.1)",
-            color: "#ccf6ff",
-            border: "1px solid rgba(102,204,255,0.4)",
-            borderRadius: "8px",
-            padding: "8px 12px",
-            cursor: "pointer",
-            marginLeft: "10px",
-            backdropFilter: "blur(6px)",
+            ...STYLES.glass,
+            padding: `${SPACING.md} ${SPACING.lg}`,
+            marginLeft: SPACING.md,
           }}
         >
           📜 View History
@@ -76,14 +72,14 @@ export default function History() {
                 <div
                   key={i}
                   style={{
-                    borderBottom: "1px solid rgba(102,204,255,0.2)",
-                    paddingBottom: "12px",
+                    borderBottom: `1px solid ${COLORS.borderLightSubtle}`,
+                    paddingBottom: SPACING.lg,
                   }}
                 >
                   <p
                     style={{
-                      marginBottom: "4px",
-                      fontSize: "12px",
+                      marginBottom: SPACING.xs,
+                      fontSize: TYPOGRAPHY.fontSize.sm,
                       opacity: 0.7,
                     }}
                   >
@@ -93,11 +89,11 @@ export default function History() {
                     onClick={() => toggleExpand(i)}
                     style={{
                       cursor: "pointer",
-                      fontWeight: "500",
-                      color: "#ccf6ff",
-                      marginBottom: "6px",
-                      fontSize: "14px",
-                      lineHeight: "1.4",
+                      fontWeight: TYPOGRAPHY.fontWeight.medium,
+                      color: COLORS.primaryText,
+                      marginBottom: SPACING.sm,
+                      fontSize: TYPOGRAPHY.fontSize.base,
+                      lineHeight: 1.4,
                     }}
                   >
                     {expanded[i] ? "▼ " : "▶ "} {c.query}
@@ -106,8 +102,8 @@ export default function History() {
                   <AnimatedCollapse show={!!expanded[i]}>
                     <ul
                       style={{
-                        marginLeft: "16px",
-                        marginTop: "6px",
+                        marginLeft: SPACING.xl,
+                        marginTop: SPACING.sm,
                         padding: 0,
                         listStyle: "none",
                       }}
@@ -119,15 +115,15 @@ export default function History() {
                             key={j}
                             style={{
                               color: TEXT_COLORS[j % TEXT_COLORS.length],
-                              marginBottom: "6px",
-                              fontSize: "13px",
-                              lineHeight: "1.4",
+                              marginBottom: SPACING.sm,
+                              fontSize: TYPOGRAPHY.fontSize.md,
+                              lineHeight: 1.4,
                             }}
                           >
                             <em>Member {j + 1}</em>{" "}
                             <span
                               style={{
-                                fontSize: "11px",
+                                fontSize: TYPOGRAPHY.fontSize.xs,
                                 opacity: 0.6,
                                 fontStyle: "italic",
                               }}

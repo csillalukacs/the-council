@@ -1,6 +1,7 @@
 import { Html } from "@react-three/drei";
 import { useState, useEffect } from "react";
 import HelpButton from "./HelpButton";
+import { STYLES, SPACING, TYPOGRAPHY, RADIUS } from "./theme";
 
 export default function CouncilUI({
   showKeyInput,
@@ -58,13 +59,11 @@ export default function CouncilUI({
           <div
             style={{
               display: "flex",
-              gap: "8px",
+              gap: SPACING.md,
               alignItems: "center",
-              background: "rgba(102,204,255,0.1)",
-              padding: "6px 10px",
-              borderRadius: "8px",
-              border: "1px solid rgba(102,204,255,0.4)",
-              backdropFilter: "blur(6px)",
+              ...STYLES.glass,
+              padding: `${SPACING.sm} ${SPACING.md}`,
+              borderRadius: RADIUS.lg,
             }}
           >
             <input
@@ -73,22 +72,16 @@ export default function CouncilUI({
               onChange={(e) => setTempKey(e.target.value)}
               placeholder="Enter your OpenRouter API key"
               style={{
-                background: "transparent",
-                border: "none",
-                color: "#ccf6ff",
-                outline: "none",
+                ...STYLES.input,
                 width: "260px",
               }}
             />
             <button
               onClick={saveKey}
               style={{
-                padding: "6px 10px",
-                background: "rgba(102,204,255,0.15)",
-                border: "1px solid rgba(102,204,255,0.4)",
-                borderRadius: "6px",
-                color: "#ccf6ff",
-                cursor: "pointer",
+                padding: `${SPACING.sm} ${SPACING.md}`,
+                ...STYLES.glassMedium,
+                borderRadius: RADIUS.md,
               }}
             >
               Save
@@ -102,14 +95,9 @@ export default function CouncilUI({
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "6px",
-                background: "rgba(102,204,255,0.1)",
-                border: "1px solid rgba(102,204,255,0.4)",
-                borderRadius: "6px",
-                color: "#ccf6ff",
-                padding: "4px 8px",
-                cursor: "pointer",
-                backdropFilter: "blur(6px)",
+                gap: SPACING.sm,
+                ...STYLES.glass,
+                padding: `${SPACING.xs} ${SPACING.md}`,
               }}
             >
               edit key
@@ -120,16 +108,8 @@ export default function CouncilUI({
         {/* Question input */}
         <div
           style={{
-            padding: "8px 16px",
-            background: "rgba(102, 204, 255, 0.15)",
-            border: "1px solid rgba(102, 204, 255, 0.4)",
-            borderRadius: "6px",
+            ...STYLES.inputContainer,
             minWidth: "300px",
-            color: "#ccf6ff",
-            fontSize: "14px",
-            letterSpacing: "0.5px",
-            backdropFilter: "blur(6px)",
-            boxShadow: "0 0 12px rgba(102, 204, 255, 0.3)",
           }}
         >
           <textarea
@@ -145,12 +125,9 @@ export default function CouncilUI({
             }}
             style={{
               width: "500px",
-              background: "transparent",
-              border: "none",
-              color: "white",
-              outline: "none",
+              ...STYLES.input,
               textAlign: "center",
-              fontSize: "16px",
+              fontSize: TYPOGRAPHY.fontSize.lg,
               overflowY: "scroll",
               resize: "none",
             }}
@@ -163,22 +140,11 @@ export default function CouncilUI({
             disabled={loading || !apiKey}
             onClick={askCouncil}
             style={{
-              marginTop: "12px",
-              margin: "10px",
-              padding: "8px 16px",
-              background:
-                loading || !apiKey
-                  ? "rgba(102, 204, 255, 0.05)"
-                  : "rgba(102, 204, 255, 0.15)",
-              border: "1px solid rgba(102, 204, 255, 0.4)",
-              borderRadius: "6px",
-              color: "#ccf6ff",
-              fontSize: "14px",
-              letterSpacing: "0.5px",
-              cursor: loading || !apiKey ? "not-allowed" : "pointer",
-              backdropFilter: "blur(6px)",
-              boxShadow: "0 0 12px rgba(102, 204, 255, 0.3)",
-              transition: "all 0.2s ease",
+              marginTop: SPACING.lg,
+              margin: SPACING.md,
+              ...(loading || !apiKey
+                ? STYLES.buttonDisabled
+                : STYLES.buttonPrimary),
             }}
           >
             {!apiKey
