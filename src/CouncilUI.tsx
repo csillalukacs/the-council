@@ -25,6 +25,8 @@ export default function CouncilUI({
   setShowHelp: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [tempKey, setTempKey] = useState("");
+  const [isAnimating, setIsAnimating] = useState(false);
+  const shouldShowInput = showKeyInput || !apiKey;
 
   // When user clicks "edit key", populate the input with the existing API key
   useEffect(() => {
@@ -35,6 +37,20 @@ export default function CouncilUI({
       setTempKey("");
     }
   }, [showKeyInput, apiKey]);
+
+  // Handle animation when input visibility changes
+  useEffect(() => {
+    if (shouldShowInput) {
+      // Trigger animation after render
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsAnimating(true);
+        });
+      });
+    } else {
+      setIsAnimating(false);
+    }
+  }, [shouldShowInput]);
 
   const saveKey = () => {
     if (tempKey.trim()) {
@@ -55,7 +71,7 @@ export default function CouncilUI({
         }}
       >
         {/* API Key UI */}
-        {showKeyInput || !apiKey ? (
+        {shouldShowInput ? (
           <div
             style={{
               display: "flex",
@@ -64,6 +80,11 @@ export default function CouncilUI({
               ...STYLES.glass,
               padding: `${SPACING.sm} ${SPACING.md}`,
               borderRadius: RADIUS.lg,
+              opacity: isAnimating ? 1 : 0,
+              transform: isAnimating
+                ? "scale(1)"
+                : "scaleX(0.5)",
+              transition: "opacity 0.2s ease-out, transform 0.2s ease-out",
             }}
           >
             <input
