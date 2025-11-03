@@ -98,6 +98,7 @@ export default function Modal({
               color: COLORS.primaryText,
               padding: `${SPACING.sm} ${SPACING.md}`,
               cursor: "pointer",
+              zIndex: 150,
             }}
             aria-label="Close modal"
           >
