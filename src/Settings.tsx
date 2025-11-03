@@ -46,9 +46,19 @@ export default function Settings({
         isOpen={showSettings}
         onClose={() => setShowSettings(false)}
         title="Models"
-        maxWidth="300px"
+        maxWidth="400px"
       >
-        <div style={{ display: "flex", flexDirection: "column", gap: SPACING.lg }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: SPACING.lg,
+            paddingLeft: "35px",
+            paddingRight: "35px",
+            paddingTop: "10px",
+            paddingBottom: "30px",
+          }}
+        >
           {members.map((m, i) => (
             <div
               key={i}
