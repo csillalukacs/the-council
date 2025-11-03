@@ -3,6 +3,6 @@
 export interface Conversation {
   timestamp: string;
   query: string;
-  answers: (string | undefined)[];
-  models?: string[];
+  answers: Record<string, string | undefined>; // Map of member ID -> answer
+  memberModels?: Record<string, string>; // Map of member ID -> model
 }

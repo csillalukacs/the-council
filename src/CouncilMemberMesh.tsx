@@ -1,44 +1,34 @@
 import { Html } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { useRef, type JSX } from "react";
-import type { Vector3 } from "three";
+import { useRef } from "react";
 import * as THREE from "three";
 import { SCENE_CONFIG } from "./constants";
 import { STYLES, SPACING, TYPOGRAPHY } from "./theme";
-import { GEOMETRIES } from "./geometries";
+import type { CouncilMemberData } from "./hooks/useCouncilMembers";
 
 export const CouncilMemberMesh = ({
-  index,
-  position,
-  color,
-  textColor,
-  geometryFn,
+  member,
   active,
   answer,
-  font,
   onRetry,
 }: {
-  index: number;
-  position: Vector3;
-  color: string;
-  textColor: string;
-  geometryFn: (size: number) => JSX.Element;
+  member: CouncilMemberData;
   active: boolean;
   answer?: string;
-  font: string;
   onRetry?: () => void;
 }) => {
   const mesh = useRef<THREE.Mesh>(null!);
   const clock = useRef(new THREE.Clock());
   const basePosition = useRef(new THREE.Vector3(0, 0, 0));
 
-  // Check if this member has a torus geometry (torus is at index 6 in GEOMETRIES array)
-  const isTorus = index % GEOMETRIES.length === 6;
-  const initialRotationX = isTorus ? Math.PI / 2 : 0;
+  const initialRotationX = member.isTorus ? Math.PI / 2 : 0;
 
-  // Create variation per member for more organic feel
-  const phaseOffset = (index * 0.7) % (Math.PI * 2);
-  const speedVariation = 0.8 + (index % 3) * 0.2; // Vary between 0.8 and 1.2
+  // Create variation per member for more organic feel using memberId hash
+  const idHash = member.id
+    .split("")
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const phaseOffset = (idHash * 0.7) % (Math.PI * 2);
+  const speedVariation = 0.8 + (idHash % 3) * 0.2; // Vary between 0.8 and 1.2
 
   useFrame(() => {
     const t = clock.current.getElapsedTime();
@@ -87,14 +77,14 @@ export const CouncilMemberMesh = ({
   });
 
   return (
-    <group position={position}>
+    <group position={member.position}>
       <mesh ref={mesh} rotation-x={initialRotationX}>
-        {geometryFn(SCENE_CONFIG.MEMBER.size)}
+        {member.geometryFn(SCENE_CONFIG.MEMBER.size)}
         <meshStandardMaterial
-          color={color}
-          emissive={active ? color : "gray"}
+          color={member.color}
+          emissive={active ? member.color : "gray"}
           emissiveIntensity={active ? 0.3 : 0.1}
-          roughness={index === 1 || index === 6 ? 0.9 : 0.3}
+          roughness={member.roughness ?? 0.3}
           metalness={0.8}
         />
       </mesh>
@@ -103,9 +93,9 @@ export const CouncilMemberMesh = ({
           className="hide-scrollbar"
           style={{
             ...STYLES.textBubble,
-            color: textColor,
+            color: member.textColor,
             fontSize: TYPOGRAPHY.fontSize.md,
-            fontFamily: font,
+            fontFamily: member.font,
             width: "300px",
             textAlign: "center",
             maxHeight: "200px",

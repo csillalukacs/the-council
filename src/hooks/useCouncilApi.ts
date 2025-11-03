@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { API_ENDPOINT, SYSTEM_PROMPT, STORAGE_KEYS } from "../constants";
 import type { Conversation } from "../types";
+import type { CouncilMemberData } from "./useCouncilMembers";
 
 interface UseCouncilApiProps {
   apiKey: string | null;
   models: string[];
-  members: Array<{ personality: string }>;
+  members: CouncilMemberData[];
 }
 
 export function useCouncilApi({
@@ -14,18 +15,29 @@ export function useCouncilApi({
   members,
 }: UseCouncilApiProps) {
   const [loading, setLoading] = useState(false);
-  const [answers, setAnswers] = useState<(string | undefined)[]>(
-    Array(members.length).fill(undefined)
+  const [answers, setAnswers] = useState<Record<string, string | undefined>>(
+    {}
   );
-  const [activeMembers, setActiveMembers] = useState<number[]>([]);
+  const [activeMembers, setActiveMembers] = useState<string[]>([]);
   const [lastQuery, setLastQuery] = useState<string>("");
 
+  // Create a map from member ID to model for quick lookup
+  const memberModels = members.reduce(
+    (acc, member, i) => {
+      acc[member.id] = models[i] || models[0] || "";
+      return acc;
+    },
+    {} as Record<string, string>
+  );
+
   const fetchMemberAnswer = async (
-    memberIndex: number,
+    memberId: string,
     query: string,
     conversationIndex?: number
   ) => {
-    const member = members[memberIndex];
+    const member = members.find((m) => m.id === memberId);
+    if (!member) return false;
+
     try {
       const response = await fetch(API_ENDPOINT, {
         method: "POST",
@@ -34,7 +46,7 @@ export function useCouncilApi({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: models[memberIndex],
+          model: memberModels[memberId],
           messages: [
             { role: "system", content: SYSTEM_PROMPT },
             { role: "system", content: member.personality },
@@ -47,8 +59,7 @@ export function useCouncilApi({
       const output = data?.choices?.[0]?.message?.content ?? "*silence*";
 
       setAnswers((prev) => {
-        const newAnswers = [...prev];
-        newAnswers[memberIndex] = output;
+        const newAnswers = { ...prev, [memberId]: output };
 
         // Auto-update this conversation in localStorage if conversationIndex is provided
         if (conversationIndex !== undefined) {
@@ -57,6 +68,7 @@ export function useCouncilApi({
           ) as Conversation[];
           if (stored[conversationIndex]) {
             stored[conversationIndex].answers = newAnswers;
+            stored[conversationIndex].memberModels = memberModels;
             localStorage.setItem(
               STORAGE_KEYS.CONVERSATIONS,
               JSON.stringify(stored)
@@ -66,15 +78,14 @@ export function useCouncilApi({
 
         return newAnswers;
       });
-      setActiveMembers((prev) => prev.filter((x) => x !== memberIndex));
+      setActiveMembers((prev) => prev.filter((id) => id !== memberId));
       return true;
     } catch {
-      setAnswers((prev) => {
-        const newAnswers = [...prev];
-        newAnswers[memberIndex] = "Error fetching response.";
-        return newAnswers;
-      });
-      setActiveMembers((prev) => prev.filter((x) => x !== memberIndex));
+      setAnswers((prev) => ({
+        ...prev,
+        [memberId]: "Error fetching response.",
+      }));
+      setActiveMembers((prev) => prev.filter((id) => id !== memberId));
       return false;
     }
   };
@@ -86,11 +97,16 @@ export function useCouncilApi({
     setLastQuery(query);
 
     // Create a new conversation entry
+    const initialAnswers: Record<string, string | undefined> = {};
+    members.forEach((member) => {
+      initialAnswers[member.id] = undefined;
+    });
+
     const newConversation: Conversation = {
       timestamp: new Date().toISOString(),
       query,
-      answers: Array(members.length).fill(undefined),
-      models: [...models],
+      answers: initialAnswers,
+      memberModels,
     };
 
     const existing = JSON.parse(
@@ -100,30 +116,30 @@ export function useCouncilApi({
     localStorage.setItem(STORAGE_KEYS.CONVERSATIONS, JSON.stringify(existing));
     const conversationIndex = existing.length - 1;
 
-    setActiveMembers(Array.from({ length: members.length }, (_, i) => i));
-    setAnswers(Array(members.length).fill(undefined));
+    setActiveMembers(members.map((m) => m.id));
+    setAnswers(initialAnswers);
 
     await Promise.allSettled(
-      members.map(async (_, i) => {
-        await fetchMemberAnswer(i, query, conversationIndex);
+      members.map(async (member) => {
+        await fetchMemberAnswer(member.id, query, conversationIndex);
       })
     );
 
     setLoading(false);
   };
 
-  const retryMember = async (memberIndex: number) => {
+  const retryMember = async (memberId: string) => {
     if (!lastQuery.trim() || !apiKey) return;
 
     // Clear the error answer and set as active
     setAnswers((prev) => {
-      const newAnswers = [...prev];
-      newAnswers[memberIndex] = undefined;
+      const newAnswers = { ...prev };
+      newAnswers[memberId] = undefined;
       return newAnswers;
     });
     setActiveMembers((prev) => {
-      if (!prev.includes(memberIndex)) {
-        return [...prev, memberIndex];
+      if (!prev.includes(memberId)) {
+        return [...prev, memberId];
       }
       return prev;
     });
@@ -135,7 +151,7 @@ export function useCouncilApi({
     const conversationIndex =
       stored.length > 0 ? stored.length - 1 : undefined;
 
-    await fetchMemberAnswer(memberIndex, lastQuery, conversationIndex);
+    await fetchMemberAnswer(memberId, lastQuery, conversationIndex);
   };
 
   return {

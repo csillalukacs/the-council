@@ -70,18 +70,13 @@ export default function CouncilChamber() {
           speed={SCENE_CONFIG.SPARKLES.speed}
         />
         <Float rotationIntensity={0}>
-          {members.map((member, i) => (
+          {members.map((member) => (
             <CouncilMemberMesh
-              key={i}
-              index={i}
-              position={member.position}
-              color={member.color}
-              textColor={member.textColor}
-              active={activeMembers.includes(i)}
-              answer={answers[i]}
-              geometryFn={member.geometryFn}
-              font={member.font}
-              onRetry={() => retryMember(i)}
+              key={member.id}
+              member={member}
+              active={activeMembers.includes(member.id)}
+              answer={answers[member.id]}
+              onRetry={() => retryMember(member.id)}
             />
           ))}
         </Float>

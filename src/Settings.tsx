@@ -10,7 +10,7 @@ export default function Settings({
 }: {
   models: string[];
   setModels: React.Dispatch<React.SetStateAction<string[]>>;
-  members: { color: string }[];
+  members: Array<{ id: string; displayName: string; color: string }>;
 }) {
   const [showSettings, setShowSettings] = useState(false);
 
@@ -59,9 +59,9 @@ export default function Settings({
             paddingBottom: "30px",
           }}
         >
-          {members.map((m, i) => (
+          {members.map((member, i) => (
             <div
-              key={i}
+              key={member.id}
               style={{
                 fontSize: TYPOGRAPHY.fontSize.sm,
               }}
@@ -69,14 +69,14 @@ export default function Settings({
               <div style={{ marginBottom: SPACING.xs }}>
                 <span
                   style={{
-                    color: m.color,
+                    color: member.color,
                     fontWeight: TYPOGRAPHY.fontWeight.bold,
                     marginRight: SPACING.xs,
                   }}
                 >
                   ●
                 </span>
-                <span>Member {i + 1}</span>
+                <span>{member.displayName}</span>
               </div>
               <select
                 value={models[i]}

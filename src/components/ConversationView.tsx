@@ -1,4 +1,4 @@
-import { TEXT_COLORS } from "../constants";
+import { useCouncilMembers } from "../hooks/useCouncilMembers";
 import { STYLES, COLORS, SPACING, TYPOGRAPHY } from "../theme";
 import type { Conversation } from "../types";
 
@@ -11,6 +11,40 @@ export default function ConversationView({
   conversation,
   onBack,
 }: ConversationViewProps) {
+  const members = useCouncilMembers();
+  // Create a map for quick member lookup
+  const memberMap = new Map(members.map((m) => [m.id, m]));
+
+  // Get member IDs in the order they appear in the members array
+  const memberIds = members.map((m) => m.id);
+
+  // Handle backward compatibility: check if answers is an array (old format)
+  const isLegacyFormat = Array.isArray((conversation as any).answers);
+
+  // Convert legacy array format to new object format if needed
+  const answers = isLegacyFormat
+    ? (() => {
+        const arr = (conversation as any).answers as (string | undefined)[];
+        const obj: Record<string, string | undefined> = {};
+        memberIds.forEach((id, i) => {
+          obj[id] = arr[i];
+        });
+        return obj;
+      })()
+    : conversation.answers;
+
+  // Handle legacy models array format
+  const memberModels = (conversation as any).models
+    ? (() => {
+        const arr = (conversation as any).models as string[];
+        const obj: Record<string, string> = {};
+        memberIds.forEach((id, i) => {
+          obj[id] = arr[i] || "unknown model";
+        });
+        return obj;
+      })()
+    : conversation.memberModels;
+
   return (
     <div
       style={{
@@ -71,13 +105,18 @@ export default function ConversationView({
           gap: SPACING.md,
         }}
       >
-        {conversation.answers.map((a, j) => {
-          const model = conversation.models?.[j] || "unknown model";
+        {memberIds.map((memberId) => {
+          const member = memberMap.get(memberId);
+          const answer = answers[memberId];
+          const model = memberModels?.[memberId] || "unknown model";
+
+          if (!member) return null;
+
           return (
             <li
-              key={j}
+              key={memberId}
               style={{
-                color: TEXT_COLORS[j % TEXT_COLORS.length],
+                color: member.textColor,
                 fontSize: TYPOGRAPHY.fontSize.md,
                 lineHeight: 1.6,
                 padding: `${SPACING.md} ${SPACING.lg}`,
@@ -93,7 +132,7 @@ export default function ConversationView({
                   opacity: 0.8,
                 }}
               >
-                <em>Member {j + 1}</em>{" "}
+                <em>{member.displayName}</em>{" "}
                 <span
                   style={{
                     fontSize: TYPOGRAPHY.fontSize.xs,
@@ -104,7 +143,7 @@ export default function ConversationView({
                   ({model})
                 </span>
               </div>
-              <div>{a || "*no response*"}</div>
+              <div>{answer || "*no response*"}</div>
             </li>
           );
         })}
