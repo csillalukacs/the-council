@@ -57,7 +57,7 @@ export default function Modal({
         style={{
           ...STYLES.modalContent,
           width: maxWidth,
-          maxHeight: "90vh",
+          maxHeight: "80vh",
         }}
       >
         {showCloseButton && (

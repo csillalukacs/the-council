@@ -53,7 +53,7 @@ export default function History() {
         isOpen={showHistory}
         onClose={() => setShowHistory(false)}
         title="Conversation History"
-        maxWidth="90vw"
+        maxWidth="70vw"
       >
         {history.length === 0 ? (
           <p style={{ opacity: 0.7 }}>No saved conversations yet.</p>
@@ -63,6 +63,7 @@ export default function History() {
               display: "flex",
               flexDirection: "column",
               gap: "12px",
+              padding: "10px 40px",
             }}
           >
             {history
@@ -118,6 +119,7 @@ export default function History() {
                               marginBottom: SPACING.sm,
                               fontSize: TYPOGRAPHY.fontSize.md,
                               lineHeight: 1.4,
+                              padding: "12px 60px 10px 20px"
                             }}
                           >
                             <em>Member {j + 1}</em>{" "}
@@ -130,7 +132,7 @@ export default function History() {
                             >
                               ({model})
                             </span>
-                            : {a || "*no response*"}
+                            : <div>{a || "*no response*"}</div>
                           </li>
                         );
                       })}
