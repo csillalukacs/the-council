@@ -30,21 +30,60 @@ export const CouncilMemberMesh = ({
 }) => {
   const mesh = useRef<THREE.Mesh>(null!);
   const clock = useRef(new THREE.Clock());
+  const basePosition = useRef(new THREE.Vector3(0, 0, 0));
 
   // Check if this member has a torus geometry (torus is at index 6 in GEOMETRIES array)
   const isTorus = index % GEOMETRIES.length === 6;
   const initialRotationX = isTorus ? Math.PI / 2 : 0;
 
+  // Create variation per member for more organic feel
+  const phaseOffset = (index * 0.7) % (Math.PI * 2);
+  const speedVariation = 0.8 + (index % 3) * 0.2; // Vary between 0.8 and 1.2
+
   useFrame(() => {
     const t = clock.current.getElapsedTime();
-    mesh.current.rotation.y += 0.002; // keep slow spin
+    const material = mesh.current.material as THREE.MeshStandardMaterial;
 
-    // Pulse when active
-    const scale = active ? 1 + Math.sin(t * 4) * 0.02 : 1;
-    mesh.current.scale.set(scale, scale, scale);
-    const intensity = active ? 0.3 + Math.sin(t * 4) * 0.2 : 0.1;
-    (mesh.current.material as THREE.MeshStandardMaterial).emissiveIntensity =
-      intensity;
+    if (active) {
+      // Base slow rotation with variation
+      const rotationVariation = Math.sin(t * 1.5 + phaseOffset) * 0.001;
+      mesh.current.rotation.y += 0.002 + rotationVariation;
+
+      // Subtle scale pulse with multiple overlapping waves for organic feel
+      const scaleWave1 = Math.sin(t * 3 * speedVariation + phaseOffset) * 0.03;
+      const scaleWave2 =
+        Math.sin(t * 1.8 * speedVariation + phaseOffset * 1.3) * 0.015;
+      const scale = 1 + scaleWave1 + scaleWave2;
+      mesh.current.scale.set(scale, scale, scale);
+
+      // Enhanced emissive intensity with rich variation
+      const intensityWave1 =
+        Math.sin(t * 3.5 * speedVariation + phaseOffset) * 0.25;
+      const intensityWave2 =
+        Math.sin(t * 1.2 * speedVariation + phaseOffset * 2) * 0.15;
+      const intensity = 0.4 + intensityWave1 + intensityWave2;
+      material.emissiveIntensity = Math.max(0.2, Math.min(0.8, intensity));
+
+      // Subtle vertical bobbing
+      const bobOffset =
+        Math.sin(t * 1.5 * speedVariation + phaseOffset * 0.5) * 0.04;
+      mesh.current.position.y = basePosition.current.y + bobOffset;
+
+      // Subtle rotation wobble on X and Z axes
+      const wobbleX = Math.sin(t * 2.1 * speedVariation + phaseOffset) * 0.02;
+      const wobbleZ =
+        Math.cos(t * 1.7 * speedVariation + phaseOffset * 1.5) * 0.015;
+      mesh.current.rotation.x = initialRotationX + wobbleX;
+      mesh.current.rotation.z = wobbleZ;
+    } else {
+      // Reset to normal state when not active
+      mesh.current.rotation.y += 0.002; // keep slow base spin
+      mesh.current.scale.set(1, 1, 1);
+      material.emissiveIntensity = 0.1;
+      mesh.current.position.y = basePosition.current.y;
+      mesh.current.rotation.x = initialRotationX;
+      mesh.current.rotation.z = 0;
+    }
   });
 
   return (
