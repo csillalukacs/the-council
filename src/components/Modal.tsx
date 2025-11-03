@@ -38,13 +38,6 @@ export default function Modal({
         });
       });
       document.addEventListener("keydown", handleEscape);
-      // Trap focus within modal - delay to ensure element is rendered
-      setTimeout(() => {
-        const firstFocusable = modalContentRef.current?.querySelector(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        ) as HTMLElement;
-        firstFocusable?.focus();
-      }, 0);
     } else {
       setIsAnimating(false);
       // Delay unmounting to allow exit animation
