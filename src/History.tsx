@@ -4,17 +4,11 @@ import HistoryListView from "./components/HistoryListView";
 import ConversationView from "./components/ConversationView";
 import { STORAGE_KEYS } from "./constants";
 import { STYLES, SPACING } from "./theme";
+import type { Conversation } from "./types";
 
 export default function History() {
   const [showHistory, setShowHistory] = useState(false);
-  const [history, setHistory] = useState<
-    {
-      timestamp: string;
-      query: string;
-      answers: (string | undefined)[];
-      models?: string[];
-    }[]
-  >([]);
+  const [history, setHistory] = useState<Conversation[]>([]);
   const [openedConversation, setOpenedConversation] = useState<number | null>(
     null
   );

@@ -1,17 +1,11 @@
 import { useState } from "react";
 import { API_ENDPOINT, SYSTEM_PROMPT, STORAGE_KEYS } from "../constants";
+import type { Conversation } from "../types";
 
 interface UseCouncilApiProps {
   apiKey: string | null;
   models: string[];
   members: Array<{ personality: string }>;
-}
-
-interface Conversation {
-  timestamp: string;
-  query: string;
-  answers: (string | undefined)[];
-  models: string[];
 }
 
 export function useCouncilApi({

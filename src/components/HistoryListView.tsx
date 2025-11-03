@@ -1,12 +1,6 @@
 import { useState } from "react";
 import { COLORS, SPACING, TYPOGRAPHY } from "../theme";
-
-interface Conversation {
-  timestamp: string;
-  query: string;
-  answers: (string | undefined)[];
-  models?: string[];
-}
+import type { Conversation } from "../types";
 
 interface HistoryListViewProps {
   history: Conversation[];
