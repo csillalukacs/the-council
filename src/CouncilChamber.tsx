@@ -1,11 +1,9 @@
 import { Canvas } from "@react-three/fiber";
-import { Float, Sparkles, OrbitControls } from "@react-three/drei";
 import { useState, useEffect, useRef } from "react";
-import { CouncilMember } from "./CouncilMember";
-import CouncilUI from "./CouncilUI";
 import Settings from "./Settings";
 import History from "./History";
 import Help from "./Help";
+import CouncilScene from "./components/CouncilScene";
 import { useCouncilMembers } from "./hooks/useCouncilMembers";
 import { useCouncilApi } from "./hooks/useCouncilApi";
 import { useApiKey, useModels } from "./hooks/useLocalStorage";
@@ -59,37 +57,11 @@ export default function CouncilChamber() {
           fov: SCENE_CONFIG.CAMERA.fov,
         }}
       >
-        <ambientLight intensity={SCENE_CONFIG.LIGHTING.ambientIntensity} />
-        <pointLight
-          position={SCENE_CONFIG.LIGHTING.pointLight.position}
-          intensity={SCENE_CONFIG.LIGHTING.pointLight.intensity}
-          color={SCENE_CONFIG.LIGHTING.pointLight.color}
-        />
-        <directionalLight
-          position={SCENE_CONFIG.LIGHTING.directionalLight.position}
-          intensity={SCENE_CONFIG.LIGHTING.directionalLight.intensity}
-          color={SCENE_CONFIG.LIGHTING.directionalLight.color}
-        />
-        <Sparkles
-          count={SCENE_CONFIG.SPARKLES.count}
-          scale={SCENE_CONFIG.SPARKLES.scale}
-          size={SCENE_CONFIG.SPARKLES.size}
-          color={SCENE_CONFIG.SPARKLES.color}
-          speed={SCENE_CONFIG.SPARKLES.speed}
-        />
-        <Float rotationIntensity={0}>
-          {members.map((member) => (
-            <CouncilMember
-              key={member.id}
-              member={member}
-              active={activeMembers.includes(member.id)}
-              answer={answers[member.id]}
-              onRetry={() => retryMember(member.id)}
-            />
-          ))}
-        </Float>
-
-        <CouncilUI
+        <CouncilScene
+          members={members}
+          activeMembers={activeMembers}
+          answers={answers}
+          onRetryMember={retryMember}
           showKeyInput={showKeyInput}
           setShowKeyInput={setShowKeyInput}
           apiKey={apiKey}
@@ -100,7 +72,6 @@ export default function CouncilChamber() {
           setApiKey={setApiKey}
           setShowHelp={setShowHelp}
         />
-        <OrbitControls enablePan={false} enableZoom={false} />
       </Canvas>
       {showHelp && <Help setShowHelp={setShowHelp} />}
       <History />
