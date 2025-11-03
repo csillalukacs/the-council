@@ -181,5 +181,33 @@ export const STYLES = {
     borderRadius: RADIUS.md,
     backdropFilter: "blur(4px)",
   },
+  
+  // Delete button (for history items)
+  deleteButton: {
+    background: "rgba(255, 77, 77, 0.2)",
+    border: "1px solid rgba(255, 77, 77, 0.4)",
+    color: "#ff6b6b",
+    hoverBackground: "rgba(255, 77, 77, 0.3)",
+  },
+  
+  // Settings button
+  settingsButton: {
+    background: "#222",
+    color: "#fff",
+    border: "1px solid #444",
+  },
+  
+  // Select dropdown
+  select: {
+    background: "#111",
+    color: "white",
+    border: "1px solid #444",
+  },
+  
+  // Conversation item
+  conversationItem: {
+    background: "rgba(255, 255, 255, 0.03)",
+    hoverBackground: "rgba(255, 255, 255, 0.05)",
+  },
 } as const;
 

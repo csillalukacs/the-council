@@ -2,7 +2,13 @@ import { Html } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import * as THREE from "three";
-import { SCENE_CONFIG } from "./constants";
+import {
+  SCENE_CONFIG,
+  MEMBER_ANIMATION,
+  UI_TEXT,
+  DIMENSIONS,
+  Z_INDEX,
+} from "./constants";
 import { STYLES, SPACING, TYPOGRAPHY } from "./theme";
 import type { CouncilMemberData } from "./hooks/useCouncilMembers";
 
@@ -21,14 +27,19 @@ export const CouncilMemberMesh = ({
   const clock = useRef(new THREE.Clock());
   const basePosition = useRef(new THREE.Vector3(0, 0, 0));
 
-  const initialRotationX = member.isTorus ? Math.PI / 2 : 0;
+  const initialRotationX = member.isTorus
+    ? MEMBER_ANIMATION.torusInitialRotation
+    : 0;
 
   // Create variation per member for more organic feel using memberId hash
   const idHash = member.id
     .split("")
     .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  const phaseOffset = (idHash * 0.7) % (Math.PI * 2);
-  const speedVariation = 0.8 + (idHash % 3) * 0.2; // Vary between 0.8 and 1.2
+  const phaseOffset =
+    (idHash * MEMBER_ANIMATION.variation.phaseMultiplier) % (Math.PI * 2);
+  const speedVariation =
+    MEMBER_ANIMATION.variation.speedBase +
+    (idHash % 3) * (MEMBER_ANIMATION.variation.speedRange / 3);
 
   useFrame(() => {
     const t = clock.current.getElapsedTime();
@@ -36,40 +47,70 @@ export const CouncilMemberMesh = ({
 
     if (active) {
       // Base slow rotation with variation
-      const rotationVariation = Math.sin(t * 1.5 + phaseOffset) * 0.001;
-      mesh.current.rotation.y += 0.002 + rotationVariation;
+      const rotationVariation =
+        Math.sin(
+          t * MEMBER_ANIMATION.rotationVariation.frequency + phaseOffset
+        ) * MEMBER_ANIMATION.rotationVariation.amplitude;
+      mesh.current.rotation.y +=
+        MEMBER_ANIMATION.baseRotationSpeed + rotationVariation;
 
       // Subtle scale pulse with multiple overlapping waves for organic feel
-      const scaleWave1 = Math.sin(t * 3 * speedVariation + phaseOffset) * 0.03;
+      const scaleWave1 =
+        Math.sin(
+          t * MEMBER_ANIMATION.scale.wave1.frequency * speedVariation +
+            phaseOffset
+        ) * MEMBER_ANIMATION.scale.wave1.amplitude;
       const scaleWave2 =
-        Math.sin(t * 1.8 * speedVariation + phaseOffset * 1.3) * 0.015;
+        Math.sin(
+          t * MEMBER_ANIMATION.scale.wave2.frequency * speedVariation +
+            phaseOffset * 1.3
+        ) * MEMBER_ANIMATION.scale.wave2.amplitude;
       const scale = 1 + scaleWave1 + scaleWave2;
       mesh.current.scale.set(scale, scale, scale);
 
       // Enhanced emissive intensity with rich variation
       const intensityWave1 =
-        Math.sin(t * 3.5 * speedVariation + phaseOffset) * 0.25;
+        Math.sin(
+          t * MEMBER_ANIMATION.emissive.wave1.frequency * speedVariation +
+            phaseOffset
+        ) * MEMBER_ANIMATION.emissive.wave1.amplitude;
       const intensityWave2 =
-        Math.sin(t * 1.2 * speedVariation + phaseOffset * 2) * 0.15;
-      const intensity = 0.4 + intensityWave1 + intensityWave2;
-      material.emissiveIntensity = Math.max(0.2, Math.min(0.8, intensity));
+        Math.sin(
+          t * MEMBER_ANIMATION.emissive.wave2.frequency * speedVariation +
+            phaseOffset * 2
+        ) * MEMBER_ANIMATION.emissive.wave2.amplitude;
+      const intensity =
+        MEMBER_ANIMATION.emissive.base + intensityWave1 + intensityWave2;
+      material.emissiveIntensity = Math.max(
+        MEMBER_ANIMATION.emissive.min,
+        Math.min(MEMBER_ANIMATION.emissive.max, intensity)
+      );
 
       // Subtle vertical bobbing
       const bobOffset =
-        Math.sin(t * 1.5 * speedVariation + phaseOffset * 0.5) * 0.04;
+        Math.sin(
+          t * MEMBER_ANIMATION.bob.frequency * speedVariation +
+            phaseOffset * 0.5
+        ) * MEMBER_ANIMATION.bob.amplitude;
       mesh.current.position.y = basePosition.current.y + bobOffset;
 
       // Subtle rotation wobble on X and Z axes
-      const wobbleX = Math.sin(t * 2.1 * speedVariation + phaseOffset) * 0.02;
+      const wobbleX =
+        Math.sin(
+          t * MEMBER_ANIMATION.wobble.x.frequency * speedVariation + phaseOffset
+        ) * MEMBER_ANIMATION.wobble.x.amplitude;
       const wobbleZ =
-        Math.cos(t * 1.7 * speedVariation + phaseOffset * 1.5) * 0.015;
+        Math.cos(
+          t * MEMBER_ANIMATION.wobble.z.frequency * speedVariation +
+            phaseOffset * 1.5
+        ) * MEMBER_ANIMATION.wobble.z.amplitude;
       mesh.current.rotation.x = initialRotationX + wobbleX;
       mesh.current.rotation.z = wobbleZ;
     } else {
       // Reset to normal state when not active
-      mesh.current.rotation.y += 0.002; // keep slow base spin
+      mesh.current.rotation.y += MEMBER_ANIMATION.baseRotationSpeed; // keep slow base spin
       mesh.current.scale.set(1, 1, 1);
-      material.emissiveIntensity = 0.1;
+      material.emissiveIntensity = MEMBER_ANIMATION.emissive.inactive;
       mesh.current.position.y = basePosition.current.y;
       mesh.current.rotation.x = initialRotationX;
       mesh.current.rotation.z = 0;
@@ -83,12 +124,16 @@ export const CouncilMemberMesh = ({
         <meshStandardMaterial
           color={member.color}
           emissive={active ? member.color : "gray"}
-          emissiveIntensity={active ? 0.3 : 0.1}
+          emissiveIntensity={
+            active
+              ? MEMBER_ANIMATION.emissive.activeDefault
+              : MEMBER_ANIMATION.emissive.inactive
+          }
           roughness={member.roughness ?? 0.3}
           metalness={0.8}
         />
       </mesh>
-      <Html position={[0, 1, 1]} center zIndexRange={[0, 100]}>
+      <Html position={[0, 1, 1]} center zIndexRange={Z_INDEX.htmlOverlay}>
         <div
           className="hide-scrollbar"
           style={{
@@ -96,9 +141,9 @@ export const CouncilMemberMesh = ({
             color: member.textColor,
             fontSize: TYPOGRAPHY.fontSize.md,
             fontFamily: member.font,
-            width: "300px",
+            width: DIMENSIONS.textBubble.width,
             textAlign: "center",
-            maxHeight: "200px",
+            maxHeight: DIMENSIONS.textBubble.maxHeight,
             overflowY: "scroll",
             display: answer || active ? "block" : "none",
             position: "relative",
@@ -106,8 +151,9 @@ export const CouncilMemberMesh = ({
             userSelect: "none",
           }}
         >
-          {answer ?? (active ? "Thinking..." : "")}
-          {(answer === "Error fetching response." || answer === "*silence*") &&
+          {answer ?? (active ? UI_TEXT.STATUS.thinking : "")}
+          {(answer === UI_TEXT.STATUS.errorFetching ||
+            answer === UI_TEXT.STATUS.silence) &&
             onRetry && (
               <button
                 onClick={onRetry}
@@ -120,14 +166,14 @@ export const CouncilMemberMesh = ({
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  width: "20px",
-                  height: "20px",
+                  width: DIMENSIONS.retryButton.width,
+                  height: DIMENSIONS.retryButton.height,
                 }}
                 title="Retry"
               >
                 <svg
-                  width="12"
-                  height="12"
+                  width={DIMENSIONS.retryButton.iconSize}
+                  height={DIMENSIONS.retryButton.iconSize}
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"

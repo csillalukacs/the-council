@@ -1,5 +1,6 @@
 import Modal from "./components/Modal";
 import { STYLES, COLORS, SPACING, TYPOGRAPHY } from "./theme";
+import { DIMENSIONS, UI_TEXT } from "./constants";
 
 export default function Help({
   setShowHelp,
@@ -7,7 +8,7 @@ export default function Help({
   setShowHelp: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   return (
-    <Modal isOpen={true} onClose={() => setShowHelp(false)} maxWidth="420px">
+    <Modal isOpen={true} onClose={() => setShowHelp(false)} maxWidth={DIMENSIONS.modal.maxWidth.help}>
       <div style={{ textAlign: "center", lineHeight: 1.5 }}>
         <h3
           style={{ marginBottom: SPACING.md, fontSize: TYPOGRAPHY.fontSize.xl }}
@@ -52,7 +53,7 @@ export default function Help({
             ...STYLES.glassMedium,
           }}
         >
-          Got it
+          {UI_TEXT.BUTTONS.gotIt}
         </button>
       </div>
     </Modal>

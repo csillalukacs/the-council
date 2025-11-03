@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { STYLES, COLORS, SPACING, RADIUS, TYPOGRAPHY } from "../theme";
+import { TIMING, DIMENSIONS } from "../constants";
 
 interface ModalProps {
   isOpen: boolean;
@@ -43,7 +44,7 @@ export default function Modal({
       // Delay unmounting to allow exit animation
       const timer = setTimeout(() => {
         setShouldRender(false);
-      }, 200); // Match animation duration
+      }, TIMING.animation.modal);
       return () => {
         clearTimeout(timer);
         document.removeEventListener("keydown", handleEscape);
@@ -58,33 +59,33 @@ export default function Modal({
   if (!shouldRender) return null;
 
   return (
-    <div
-      className="modal-overlay"
-      style={{
-        ...STYLES.modalOverlay,
-        opacity: isAnimating ? 1 : 0,
-        transition: "opacity 0.2s ease-out",
-      }}
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby={title ? "modal-title" : undefined}
-    >
       <div
-        ref={modalContentRef}
-        onClick={(e) => e.stopPropagation()}
-        className="modal-content"
+        className="modal-overlay"
         style={{
-          ...STYLES.modalContent,
-          width: maxWidth,
-          maxHeight: "80vh",
+          ...STYLES.modalOverlay,
           opacity: isAnimating ? 1 : 0,
-          transform: isAnimating
-            ? "scale(1) translateY(0)"
-            : "scale(0.1) translateY(-10px)",
-          transition: "opacity 0.2s ease-out, transform 0.2s ease-out",
+          transition: `opacity ${TIMING.animation.modal}ms ease-out`,
         }}
+        onClick={onClose}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={title ? "modal-title" : undefined}
       >
+        <div
+          ref={modalContentRef}
+          onClick={(e) => e.stopPropagation()}
+          className="modal-content"
+          style={{
+            ...STYLES.modalContent,
+            width: maxWidth,
+            maxHeight: DIMENSIONS.modal.maxHeight,
+            opacity: isAnimating ? 1 : 0,
+            transform: isAnimating
+              ? "scale(1) translateY(0)"
+              : `scale(${DIMENSIONS.transform.scale.initial}) translateY(${DIMENSIONS.transform.scale.translateY})`,
+            transition: `opacity ${TIMING.animation.modal}ms ease-out, transform ${TIMING.animation.modal}ms ease-out`,
+          }}
+        >
         {showCloseButton && (
           <button
             onClick={onClose}

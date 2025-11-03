@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { COLORS, SPACING, TYPOGRAPHY } from "../theme";
+import { COLORS, SPACING, TYPOGRAPHY, STYLES, RADIUS } from "../theme";
+import { UI_TEXT, DIMENSIONS, TIMING } from "../constants";
 import type { Conversation } from "../types";
 
 interface HistoryListViewProps {
@@ -29,11 +30,11 @@ export default function HistoryListView({
         next.delete(index);
         return next;
       });
-    }, 250); // Match animation duration
+    }, TIMING.animation.deleteAnimation);
   };
 
   if (history.length === 0) {
-    return <p style={{ opacity: 0.7 }}>No saved conversations yet.</p>;
+    return <p style={{ opacity: 0.7 }}>{UI_TEXT.STATUS.noConversations}</p>;
   }
 
   return (
@@ -41,8 +42,8 @@ export default function HistoryListView({
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: "12px",
-        padding: "10px 40px",
+        gap: DIMENSIONS.conversation.gap,
+        padding: DIMENSIONS.conversation.padding,
       }}
     >
       {history
@@ -63,14 +64,14 @@ export default function HistoryListView({
                 marginBottom: isDeleting ? 0 : undefined,
                 paddingBottom: isDeleting ? 0 : SPACING.lg,
                 transition: isDeleting
-                  ? "opacity 0.25s ease-out, transform 0.25s ease-out, max-height 0.25s ease-out, margin-bottom 0.25s ease-out, padding-bottom 0.25s ease-out"
-                  : "background-color 0.2s ease, opacity 0.25s ease-out, transform 0.25s ease-out",
+                  ? `opacity ${TIMING.animation.deleteAnimation}ms ease-out, transform ${TIMING.animation.deleteAnimation}ms ease-out, max-height ${TIMING.animation.deleteAnimation}ms ease-out, margin-bottom ${TIMING.animation.deleteAnimation}ms ease-out, padding-bottom ${TIMING.animation.deleteAnimation}ms ease-out`
+                  : `background-color 0.2s ease, opacity ${TIMING.animation.deleteAnimation}ms ease-out, transform ${TIMING.animation.deleteAnimation}ms ease-out`,
               }}
               onClick={() => !isDeleting && onConversationClick(i)}
               onMouseEnter={(e) => {
                 if (!isDeleting) {
                   e.currentTarget.style.backgroundColor =
-                    "rgba(255, 255, 255, 0.05)";
+                    STYLES.conversationItem.hoverBackground;
                 }
               }}
               onMouseLeave={(e) => {
@@ -86,10 +87,10 @@ export default function HistoryListView({
                   position: "absolute",
                   top: SPACING.xs,
                   right: SPACING.xs,
-                  background: "rgba(255, 77, 77, 0.2)",
-                  border: `1px solid rgba(255, 77, 77, 0.4)`,
-                  borderRadius: "4px",
-                  color: "#ff6b6b",
+                  background: STYLES.deleteButton.background,
+                  border: STYLES.deleteButton.border,
+                  borderRadius: RADIUS.sm,
+                  color: STYLES.deleteButton.color,
                   cursor: "pointer",
                   padding: `${SPACING.xs} ${SPACING.sm}`,
                   fontSize: TYPOGRAPHY.fontSize.xs,
@@ -101,17 +102,17 @@ export default function HistoryListView({
                 onMouseEnter={(e) => {
                   if (!isDeleting) {
                     e.currentTarget.style.opacity = "1";
-                    e.currentTarget.style.background = "rgba(255, 77, 77, 0.3)";
+                    e.currentTarget.style.background = STYLES.deleteButton.hoverBackground;
                   }
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.opacity = "0.7";
-                  e.currentTarget.style.background = "rgba(255, 77, 77, 0.2)";
+                  e.currentTarget.style.background = STYLES.deleteButton.background;
                 }}
                 title="Delete conversation"
                 disabled={isDeleting}
               >
-                ✕
+                {UI_TEXT.BUTTONS.delete}
               </button>
               <p
                 style={{
@@ -129,7 +130,7 @@ export default function HistoryListView({
                   marginBottom: SPACING.sm,
                   fontSize: TYPOGRAPHY.fontSize.base,
                   lineHeight: 1.4,
-                  paddingRight: "30px",
+                  paddingRight: DIMENSIONS.conversation.itemPaddingRight,
                 }}
               >
                 {c.query}

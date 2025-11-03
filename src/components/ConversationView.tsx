@@ -1,5 +1,6 @@
 import { useCouncilMembers } from "../hooks/useCouncilMembers";
 import { STYLES, COLORS, SPACING, TYPOGRAPHY } from "../theme";
+import { UI_TEXT, DIMENSIONS } from "../constants";
 import type { Conversation } from "../types";
 
 interface ConversationViewProps {
@@ -50,7 +51,7 @@ export default function ConversationView({
       style={{
         display: "flex",
         flexDirection: "column",
-        padding: "10px 40px",
+        padding: DIMENSIONS.conversation.padding,
       }}
     >
       <button
@@ -63,7 +64,7 @@ export default function ConversationView({
           cursor: "pointer",
         }}
       >
-        ← Back to History
+        {UI_TEXT.BUTTONS.backToHistory}
       </button>
 
       <div
@@ -120,8 +121,8 @@ export default function ConversationView({
                 fontSize: TYPOGRAPHY.fontSize.md,
                 lineHeight: 1.6,
                 padding: `${SPACING.md} ${SPACING.lg}`,
-                borderRadius: "8px",
-                backgroundColor: "rgba(255, 255, 255, 0.03)",
+                borderRadius: DIMENSIONS.conversation.borderRadius,
+                backgroundColor: STYLES.conversationItem.background,
                 border: `1px solid ${COLORS.borderLightSubtle}`,
               }}
             >
@@ -143,7 +144,7 @@ export default function ConversationView({
                   ({model})
                 </span>
               </div>
-              <div>{answer || "*no response*"}</div>
+              <div>{answer || UI_TEXT.STATUS.noResponse}</div>
             </li>
           );
         })}

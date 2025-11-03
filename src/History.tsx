@@ -2,7 +2,7 @@ import { useState } from "react";
 import Modal from "./components/Modal";
 import HistoryListView from "./components/HistoryListView";
 import ConversationView from "./components/ConversationView";
-import { STORAGE_KEYS } from "./constants";
+import { STORAGE_KEYS, UI_TEXT, DIMENSIONS, TIMING } from "./constants";
 import { STYLES, SPACING } from "./theme";
 import type { Conversation } from "./types";
 
@@ -28,7 +28,7 @@ export default function History() {
     setTimeout(() => {
       setOpenedConversation(index);
       setIsTransitioning(false);
-    }, 150);
+    }, TIMING.animation.historyTransition);
   };
 
   const closeConversation = () => {
@@ -36,7 +36,7 @@ export default function History() {
     setTimeout(() => {
       setOpenedConversation(null);
       setIsTransitioning(false);
-    }, 150);
+    }, TIMING.animation.historyTransition);
   };
 
   const deleteConversation = (reversedIndex: number) => {
@@ -79,8 +79,8 @@ export default function History() {
       <div
         style={{
           position: "absolute",
-          bottom: "20px",
-          right: "20px",
+          bottom: DIMENSIONS.history.buttonPosition.bottom,
+          right: DIMENSIONS.history.buttonPosition.right,
           zIndex: 10,
         }}
       >
@@ -92,7 +92,7 @@ export default function History() {
             marginLeft: SPACING.md,
           }}
         >
-          📜 View History
+          {UI_TEXT.BUTTONS.viewHistory}
         </button>
       </div>
 
@@ -100,12 +100,12 @@ export default function History() {
         isOpen={showHistory}
         onClose={handleCloseModal}
         title={openedConversation !== null ? undefined : "Conversation History"}
-        maxWidth="70vw"
+        maxWidth={DIMENSIONS.modal.maxWidth.history}
       >
         <div
           style={{
             position: "relative",
-            minHeight: "300px",
+            minHeight: DIMENSIONS.modal.minHeight,
             overflow: "hidden",
           }}
         >
@@ -160,9 +160,9 @@ function AnimatedView({
           show && !isTransitioning
             ? "translateX(0)"
             : show
-            ? "translateX(20px)"
-            : "translateX(-20px)",
-        transition: "opacity 0.3s ease, transform 0.3s ease",
+            ? `translateX(${DIMENSIONS.transform.translateX})`
+            : `translateX(-${DIMENSIONS.transform.translateX})`,
+        transition: `opacity 0.3s ease, transform 0.3s ease`,
         pointerEvents: show ? "auto" : "none",
         width: "100%",
       }}

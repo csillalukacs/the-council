@@ -59,9 +59,17 @@ export default function CouncilChamber() {
           fov: SCENE_CONFIG.CAMERA.fov,
         }}
       >
-        <ambientLight intensity={0.3} />
-        <pointLight position={[0, 5, 0]} intensity={2} color="#8ff" />
-        <directionalLight position={[0, 10, 0]} intensity={0.5} color="#8ff" />
+        <ambientLight intensity={SCENE_CONFIG.LIGHTING.ambientIntensity} />
+        <pointLight
+          position={SCENE_CONFIG.LIGHTING.pointLight.position}
+          intensity={SCENE_CONFIG.LIGHTING.pointLight.intensity}
+          color={SCENE_CONFIG.LIGHTING.pointLight.color}
+        />
+        <directionalLight
+          position={SCENE_CONFIG.LIGHTING.directionalLight.position}
+          intensity={SCENE_CONFIG.LIGHTING.directionalLight.intensity}
+          color={SCENE_CONFIG.LIGHTING.directionalLight.color}
+        />
         <Sparkles
           count={SCENE_CONFIG.SPARKLES.count}
           scale={SCENE_CONFIG.SPARKLES.scale}

@@ -2,6 +2,7 @@ import { Html } from "@react-three/drei";
 import { useState, useEffect } from "react";
 import HelpButton from "./HelpButton";
 import { STYLES, SPACING, TYPOGRAPHY, RADIUS } from "./theme";
+import { UI_TEXT, DIMENSIONS, TIMING, Z_INDEX } from "./constants";
 
 export default function CouncilUI({
   showKeyInput,
@@ -54,7 +55,7 @@ export default function CouncilUI({
       // Delay unmounting to allow exit animation
       const timer = setTimeout(() => {
         setShouldRender(false);
-      }, 200); // Match animation duration
+      }, TIMING.animation.inputTransition);
       return () => clearTimeout(timer);
     }
   }, [shouldShowInput]);
@@ -68,16 +69,16 @@ export default function CouncilUI({
   };
 
   return (
-    <Html center position={[0, -1, 0]} zIndexRange={[0, 100]}>
+    <Html center position={[0, -1, 0]} zIndexRange={Z_INDEX.htmlOverlay}>
       <div
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "8px",
+          gap: DIMENSIONS.uiContainer.gap,
           alignItems: "center",
         }}
       >
-        <div style={{ height: "50px", overflow: "hidden", display: "flex", alignItems: "center" }}>
+        <div style={{ height: DIMENSIONS.uiContainer.height, overflow: "hidden", display: "flex", alignItems: "center" }}>
         {/* API Key UI */}
         {shouldRender ? (
           <div
@@ -89,18 +90,18 @@ export default function CouncilUI({
               padding: `${SPACING.sm} ${SPACING.md}`,
               borderRadius: RADIUS.lg,
               opacity: isAnimating ? 1 : 0,
-              transform: isAnimating ? "scale(1)" : "scaleX(0.5)",
-              transition: "opacity 0.2s ease-out, transform 0.2s ease-out",
+              transform: isAnimating ? "scale(1)" : `scaleX(${DIMENSIONS.transform.scale.inputHidden})`,
+              transition: `opacity ${TIMING.animation.inputTransition}ms ease-out, transform ${TIMING.animation.inputTransition}ms ease-out`,
             }}
           >
             <input
               type="text"
               value={tempKey}
               onChange={(e) => setTempKey(e.target.value)}
-              placeholder="Enter your OpenRouter API key"
+              placeholder={UI_TEXT.PLACEHOLDERS.apiKey}
               style={{
                 ...STYLES.input,
-                width: "260px",
+                width: DIMENSIONS.apiKeyInput.width,
               }}
             />
             <button
@@ -111,7 +112,7 @@ export default function CouncilUI({
                 borderRadius: RADIUS.md,
               }}
             >
-              Save
+              {UI_TEXT.BUTTONS.save}
             </button>
           </div>
         ) : (
@@ -126,7 +127,7 @@ export default function CouncilUI({
                 padding: `${SPACING.md} ${SPACING.md}`,
               }}
             >
-              edit key
+              {UI_TEXT.BUTTONS.editKey}
             </button>
           )
         )}
@@ -136,22 +137,22 @@ export default function CouncilUI({
         <div
           style={{
             ...STYLES.inputContainer,
-            minWidth: "300px",
+            minWidth: DIMENSIONS.queryInput.minWidth,
           }}
         >
           <textarea
             className="hide-scrollbar"
-            placeholder="the council is listening. what ails you, citizen?"
+            placeholder={UI_TEXT.PLACEHOLDERS.query}
             defaultValue={query}
             onChange={(e) => {
               setQuery(e.target.value);
               const target = e.target;
               target.style.height = "auto";
               target.style.height =
-                Math.min(target.scrollHeight, window.innerHeight * 0.6) + "px";
+                Math.min(target.scrollHeight, window.innerHeight * DIMENSIONS.queryInput.maxHeightRatio) + "px";
             }}
             style={{
-              width: "500px",
+              width: DIMENSIONS.queryInput.width,
               ...STYLES.input,
               textAlign: "center",
               fontSize: TYPOGRAPHY.fontSize.lg,
@@ -175,10 +176,10 @@ export default function CouncilUI({
             }}
           >
             {!apiKey
-              ? "enter api key to ask"
+              ? UI_TEXT.BUTTONS.enterApiKey
               : loading
-              ? "the council is deliberating..."
-              : "ask the council"}
+              ? UI_TEXT.BUTTONS.councilDeliberating
+              : UI_TEXT.BUTTONS.askCouncil}
           </button>
           {!apiKey && <HelpButton setShowHelp={setShowHelp} />}
         </span>

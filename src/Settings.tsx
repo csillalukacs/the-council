@@ -1,7 +1,12 @@
 import { useState } from "react";
 import Modal from "./components/Modal";
-import { AVAILABLE_MODELS, STORAGE_KEYS } from "./constants";
-import { SPACING, TYPOGRAPHY, RADIUS } from "./theme";
+import {
+  AVAILABLE_MODELS,
+  STORAGE_KEYS,
+  DIMENSIONS,
+  Z_INDEX,
+} from "./constants";
+import { SPACING, TYPOGRAPHY, RADIUS, STYLES } from "./theme";
 
 export default function Settings({
   models,
@@ -29,10 +34,8 @@ export default function Settings({
           position: "absolute",
           top: 10,
           left: 10,
-          zIndex: 10,
-          background: "#222",
-          color: "#fff",
-          border: "1px solid #444",
+          zIndex: Z_INDEX.settings,
+          ...STYLES.settingsButton,
           borderRadius: RADIUS.lg,
           padding: `${SPACING.sm} ${SPACING.md}`,
           cursor: "pointer",
@@ -46,17 +49,17 @@ export default function Settings({
         isOpen={showSettings}
         onClose={() => setShowSettings(false)}
         title="Models"
-        maxWidth="400px"
+        maxWidth={DIMENSIONS.modal.maxWidth.settings}
       >
         <div
           style={{
             display: "flex",
             flexDirection: "column",
             gap: SPACING.lg,
-            paddingLeft: "35px",
-            paddingRight: "35px",
-            paddingTop: "10px",
-            paddingBottom: "30px",
+            paddingLeft: DIMENSIONS.settings.padding.left,
+            paddingRight: DIMENSIONS.settings.padding.right,
+            paddingTop: DIMENSIONS.settings.padding.top,
+            paddingBottom: DIMENSIONS.settings.padding.bottom,
           }}
         >
           {members.map((member, i) => (
@@ -83,9 +86,7 @@ export default function Settings({
                 onChange={(e) => handleModelChange(i, e.target.value)}
                 style={{
                   width: "100%",
-                  background: "#111",
-                  color: "white",
-                  border: "1px solid #444",
+                  ...STYLES.select,
                   borderRadius: RADIUS.sm,
                   padding: SPACING.xs,
                 }}
