@@ -5,6 +5,7 @@ import type { Vector3 } from "three";
 import * as THREE from "three";
 import { SCENE_CONFIG } from "./constants";
 import { STYLES, SPACING, TYPOGRAPHY } from "./theme";
+import { GEOMETRIES } from "./geometries";
 
 export const CouncilMemberMesh = ({
   index,
@@ -30,6 +31,10 @@ export const CouncilMemberMesh = ({
   const mesh = useRef<THREE.Mesh>(null!);
   const clock = useRef(new THREE.Clock());
 
+  // Check if this member has a torus geometry (torus is at index 6 in GEOMETRIES array)
+  const isTorus = index % GEOMETRIES.length === 6;
+  const initialRotationX = isTorus ? Math.PI / 2 : 0;
+
   useFrame(() => {
     const t = clock.current.getElapsedTime();
     mesh.current.rotation.y += 0.002; // keep slow spin
@@ -44,13 +49,13 @@ export const CouncilMemberMesh = ({
 
   return (
     <group position={position}>
-      <mesh ref={mesh}>
+      <mesh ref={mesh} rotation-x={initialRotationX}>
         {geometryFn(SCENE_CONFIG.MEMBER.size)}
         <meshStandardMaterial
           color={color}
           emissive={active ? color : "gray"}
           emissiveIntensity={active ? 0.3 : 0.1}
-          roughness={index === 1 ? 0.9 : 0.3}
+          roughness={index === 1 || index === 6 ? 0.9 : 0.3}
           metalness={0.8}
         />
       </mesh>

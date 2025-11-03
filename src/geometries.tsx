@@ -6,4 +6,5 @@ export const GEOMETRIES = [
   (size: number) => <octahedronGeometry args={[size]} />,
   (size: number) => <dodecahedronGeometry args={[size]} />,
   (size: number) => <icosahedronGeometry args={[size]} />,
+  (size: number) => <torusGeometry args={[size, size / 2, 16, 64]}/>,
 ] as const;
