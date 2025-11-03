@@ -7,6 +7,7 @@ import { SCENE_CONFIG } from "./constants";
 import { STYLES, SPACING, TYPOGRAPHY } from "./theme";
 
 export const CouncilMemberMesh = ({
+  index,
   position,
   color,
   textColor,
@@ -16,6 +17,7 @@ export const CouncilMemberMesh = ({
   font,
   onRetry,
 }: {
+  index: number;
   position: Vector3;
   color: string;
   textColor: string;
@@ -48,7 +50,7 @@ export const CouncilMemberMesh = ({
           color={color}
           emissive={active ? color : "gray"}
           emissiveIntensity={active ? 0.3 : 0.1}
-          roughness={0.3}
+          roughness={index === 1 ? 0.9 : 0.3}
           metalness={0.8}
         />
       </mesh>

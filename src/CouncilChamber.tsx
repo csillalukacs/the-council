@@ -73,6 +73,7 @@ export default function CouncilChamber() {
           {members.map((member, i) => (
             <CouncilMemberMesh
               key={i}
+              index={i}
               position={member.position}
               color={member.color}
               textColor={member.textColor}
