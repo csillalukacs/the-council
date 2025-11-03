@@ -40,3 +40,29 @@ export const updateConversationAnswer = (
     }
 };
 
+/**
+ * Create and save a new conversation, returning its index
+ */
+export const createAndSaveConversation = (
+    query: string,
+    memberIds: string[],
+    memberModels: Record<string, string>
+): number => {
+    const initialAnswers: Record<string, string | undefined> = {};
+    memberIds.forEach((memberId) => {
+        initialAnswers[memberId] = undefined;
+    });
+
+    const newConversation: Conversation = {
+        timestamp: new Date().toISOString(),
+        query,
+        answers: initialAnswers,
+        memberModels,
+    };
+
+    const existing = getStoredConversations();
+    existing.push(newConversation);
+    saveConversations(existing);
+    return existing.length - 1;
+};
+

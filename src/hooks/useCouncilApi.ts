@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { API_ENDPOINT, SYSTEM_PROMPT, UI_TEXT } from "../constants";
-import type { Conversation } from "../types";
 import type { CouncilMemberData } from "./useCouncilMembers";
-import { getStoredConversations, saveConversations } from "../utils/conversationStorage";
-import { processSSEBuffer } from "../utils/sseUtils";
-import { createTypingEffect } from "../utils/typingEffect";
+import { UI_TEXT } from "../constants";
+import { getStoredConversations } from "../utils/conversationStorage";
+import { createAndSaveConversation } from "../utils/conversationStorage";
+import { fetchMemberAnswer } from "../utils/memberApiHelpers";
 import { STAGGER_DELAY_MS } from "../utils/apiConstants";
 
 interface UseCouncilApiProps {
@@ -34,19 +33,23 @@ export function useCouncilApi({
     {} as Record<string, string>
   );
 
-  const fetchMemberAnswer = async (
+  const handleFetchMemberAnswer = async (
     memberId: string,
     query: string,
     conversationIndex?: number
   ) => {
     const member = members.find((m) => m.id === memberId);
-    if (!member) return false;
+    if (!member || !apiKey) return false;
 
-    const typingEffect = createTypingEffect(
+    return fetchMemberAnswer({
       memberId,
+      query,
       conversationIndex,
+      member,
+      model: memberModels[memberId],
+      apiKey,
       memberModels,
-      {
+      callbacks: {
         setAnswer: (id, text) => {
           setAnswers((prev) => ({ ...prev, [id]: text }));
         },
@@ -56,75 +59,8 @@ export function useCouncilApi({
         setAnswerToSilence: (id) => {
           setAnswers((prev) => ({ ...prev, [id]: UI_TEXT.STATUS.silence }));
         },
-      }
-    );
-    typingEffect.start();
-
-    try {
-      // Make API request
-      const response = await fetch(API_ENDPOINT, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: memberModels[memberId],
-          messages: [
-            { role: "system", content: SYSTEM_PROMPT },
-            { role: "system", content: member.personality },
-            { role: "user", content: query },
-          ],
-          stream: true,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const reader = response.body?.getReader();
-      if (!reader) {
-        throw new Error("No reader available");
-      }
-
-      const decoder = new TextDecoder();
-      let buffer = "";
-
-      // Stream processing loop
-      while (true) {
-        const { done, value } = await reader.read();
-
-        if (done) {
-          typingEffect.markStreamDone();
-          break;
-        }
-
-        // Decode chunk and process SSE lines
-        const chunk = decoder.decode(value, { stream: true });
-        buffer += chunk;
-
-        const { newBuffer, deltas } = processSSEBuffer(buffer);
-        buffer = newBuffer;
-
-        // Append deltas to accumulated text
-        for (const delta of deltas) {
-          typingEffect.appendText(delta);
-        }
-      }
-
-      typingEffect.finish();
-      return true;
-    } catch (error) {
-      console.error("Error fetching member answer:", error);
-      typingEffect.cleanup();
-      setAnswers((prev) => ({
-        ...prev,
-        [memberId]: UI_TEXT.STATUS.silence,
-      }));
-      setActiveMembers((prev) => prev.filter((id) => id !== memberId));
-      return false;
-    }
+      },
+    });
   };
 
   const askCouncil = async (query: string) => {
@@ -133,26 +69,18 @@ export function useCouncilApi({
     setLoading(true);
     setLastQuery(query);
 
-    // Create initial answers for all members
+    // Create and save new conversation
+    const conversationIndex = createAndSaveConversation(
+      query,
+      members.map((m) => m.id),
+      memberModels
+    );
+
+    // Initialize UI state
     const initialAnswers: Record<string, string | undefined> = {};
     members.forEach((member) => {
       initialAnswers[member.id] = undefined;
     });
-
-    // Create and save new conversation
-    const newConversation: Conversation = {
-      timestamp: new Date().toISOString(),
-      query,
-      answers: initialAnswers,
-      memberModels,
-    };
-
-    const existing = getStoredConversations();
-    existing.push(newConversation);
-    saveConversations(existing);
-    const conversationIndex = existing.length - 1;
-
-    // Initialize UI state
     setActiveMembers(members.map((m) => m.id));
     setAnswers(initialAnswers);
 
@@ -160,7 +88,7 @@ export function useCouncilApi({
     const requestPromises = members.map((member, index) => {
       return new Promise<void>((resolve) => {
         setTimeout(async () => {
-          await fetchMemberAnswer(member.id, query, conversationIndex);
+          await handleFetchMemberAnswer(member.id, query, conversationIndex);
           resolve();
         }, index * STAGGER_DELAY_MS);
       });
@@ -187,7 +115,7 @@ export function useCouncilApi({
     const conversationIndex =
       stored.length > 0 ? stored.length - 1 : undefined;
 
-    await fetchMemberAnswer(memberId, lastQuery, conversationIndex);
+    await handleFetchMemberAnswer(memberId, lastQuery, conversationIndex);
   };
 
   return {
