@@ -38,26 +38,35 @@ export default function ConversationView({
         ← Back to History
       </button>
 
-      <p
+      <div
         style={{
-          marginBottom: SPACING.xs,
-          fontSize: TYPOGRAPHY.fontSize.sm,
-          opacity: 0.7,
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
         }}
       >
-        {new Date(conversation.timestamp).toLocaleString()}
-      </p>
-      <h3
-        style={{
-          fontWeight: TYPOGRAPHY.fontWeight.bold,
-          color: COLORS.primaryText,
-          marginBottom: SPACING.xl,
-          fontSize: TYPOGRAPHY.fontSize.lg,
-          lineHeight: 1.4,
-        }}
-      >
-        {conversation.query}
-      </h3>
+        <h3
+          style={{
+            fontWeight: TYPOGRAPHY.fontWeight.bold,
+            color: COLORS.primaryText,
+            marginBottom: SPACING.xl,
+            fontSize: TYPOGRAPHY.fontSize.lg,
+            lineHeight: 1.4,
+          }}
+        >
+          {conversation.query}
+        </h3>
+        <p
+          style={{
+            marginBottom: SPACING.xs,
+            fontSize: TYPOGRAPHY.fontSize.sm,
+            opacity: 0.7,
+          }}
+        >
+          {new Date(conversation.timestamp).toLocaleString()}
+        </p>
+      </div>
       <ul
         style={{
           marginLeft: 0,
