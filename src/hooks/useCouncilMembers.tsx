@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import * as THREE from "three";
 import type { JSX } from "react";
+import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { SCENE_CONFIG } from "../constants";
 
 export type CouncilMemberData = {
@@ -25,7 +26,12 @@ const COUNCIL_MEMBER_DEFINITIONS: Omit<CouncilMemberData, "position">[] = [
     textColor: "#d59980", // muted terracotta
     personality:
       "You are The Sage. You speak in metaphors, riddles, and koans. Your wisdom comes from seeing connections others miss. You answer briefly—often cryptically—because truth resists simple explanation. When the citizen needs clarity, you offer it obliquely; when they need comfort, you speak in images.",
-    geometryFn: (size: number) => <boxGeometry args={[size, size, size]} />,
+    geometryFn: (size: number) => {
+      // Create rounded box geometry with smooth edges
+      // Parameters: width, height, depth, segments (for roundness), radius
+      const geometry = new RoundedBoxGeometry(size, size, size, 5, size * 0.15);
+      return <primitive object={geometry} attach="geometry" />;
+    },
     font: "Times New Roman",
     roughness: 0.3,
   },
