@@ -1,10 +1,8 @@
 import { useState } from "react";
 import Modal from "./components/Modal";
-import HistoryListView from "./components/HistoryListView";
-import ConversationView from "./components/ConversationView";
-import AnimatedView from "./components/AnimatedView";
-import { UI_TEXT, DIMENSIONS, TIMING } from "./constants";
-import { STYLES, SPACING } from "./theme";
+import HistoryButton from "./components/HistoryButton";
+import HistoryModalContent from "./components/HistoryModalContent";
+import { DIMENSIONS, TIMING } from "./constants";
 import {
   getStoredConversations,
   saveConversations,
@@ -46,32 +44,9 @@ export default function History() {
     setIsTransitioning(false);
   };
 
-  const currentConversation =
-    openedConversation !== null
-      ? history[history.length - 1 - openedConversation]
-      : null;
-
   return (
     <div>
-      <div
-        style={{
-          position: "absolute",
-          bottom: DIMENSIONS.history.buttonPosition.bottom,
-          right: DIMENSIONS.history.buttonPosition.right,
-          zIndex: 10,
-        }}
-      >
-        <button
-          onClick={viewHistory}
-          style={{
-            ...STYLES.glass,
-            padding: `${SPACING.md} ${SPACING.lg}`,
-            marginLeft: SPACING.md,
-          }}
-        >
-          {UI_TEXT.BUTTONS.viewHistory}
-        </button>
-      </div>
+      <HistoryButton onClick={viewHistory} />
 
       <Modal
         isOpen={showHistory}
@@ -79,36 +54,14 @@ export default function History() {
         title={openedConversation === null ? "Conversation History" : undefined}
         maxWidth={DIMENSIONS.modal.maxWidth.history}
       >
-        <div
-          style={{
-            position: "relative",
-            minHeight: DIMENSIONS.modal.minHeight,
-            overflow: "hidden",
-          }}
-        >
-          <AnimatedView
-            show={openedConversation === null}
-            isTransitioning={isTransitioning}
-          >
-            <HistoryListView
-              history={history}
-              onConversationClick={(index) => transitionTo(index)}
-              onDeleteConversation={deleteConversation}
-            />
-          </AnimatedView>
-
-          <AnimatedView
-            show={openedConversation !== null}
-            isTransitioning={isTransitioning}
-          >
-            {currentConversation && (
-              <ConversationView
-                conversation={currentConversation}
-                onBack={() => transitionTo(null)}
-              />
-            )}
-          </AnimatedView>
-        </div>
+        <HistoryModalContent
+          history={history}
+          openedConversation={openedConversation}
+          isTransitioning={isTransitioning}
+          onConversationClick={(index) => transitionTo(index)}
+          onDeleteConversation={deleteConversation}
+          onBack={() => transitionTo(null)}
+        />
       </Modal>
     </div>
   );
