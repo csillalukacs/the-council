@@ -1,7 +1,9 @@
 import { useState } from "react";
 import Modal from "./components/Modal";
-import { TEXT_COLORS, STORAGE_KEYS } from "./constants";
-import { STYLES, COLORS, SPACING, TYPOGRAPHY } from "./theme";
+import HistoryListView from "./components/HistoryListView";
+import ConversationView from "./components/ConversationView";
+import { STORAGE_KEYS } from "./constants";
+import { STYLES, SPACING } from "./theme";
 
 export default function History() {
   const [showHistory, setShowHistory] = useState(false);
@@ -89,62 +91,10 @@ export default function History() {
             show={openedConversation === null}
             isTransitioning={isTransitioning}
           >
-            {history.length === 0 ? (
-              <p style={{ opacity: 0.7 }}>No saved conversations yet.</p>
-            ) : (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "12px",
-                  padding: "10px 40px",
-                }}
-              >
-                {history
-                  .slice()
-                  .reverse()
-                  .map((c, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        borderBottom: `1px solid ${COLORS.borderLightSubtle}`,
-                        paddingBottom: SPACING.lg,
-                        cursor: "pointer",
-                        transition: "background-color 0.2s ease",
-                      }}
-                      onClick={() => openConversation(i)}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor =
-                          "rgba(255, 255, 255, 0.05)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                      }}
-                    >
-                      <p
-                        style={{
-                          marginBottom: SPACING.xs,
-                          fontSize: TYPOGRAPHY.fontSize.sm,
-                          opacity: 0.7,
-                        }}
-                      >
-                        {new Date(c.timestamp).toLocaleString()}
-                      </p>
-                      <p
-                        style={{
-                          fontWeight: TYPOGRAPHY.fontWeight.medium,
-                          color: COLORS.primaryText,
-                          marginBottom: SPACING.sm,
-                          fontSize: TYPOGRAPHY.fontSize.base,
-                          lineHeight: 1.4,
-                        }}
-                      >
-                        {c.query}
-                      </p>
-                    </div>
-                  ))}
-              </div>
-            )}
+            <HistoryListView
+              history={history}
+              onConversationClick={openConversation}
+            />
           </AnimatedView>
 
           {/* Conversation View */}
@@ -153,103 +103,10 @@ export default function History() {
             isTransitioning={isTransitioning}
           >
             {openedConversation !== null && (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  padding: "10px 40px",
-                }}
-              >
-                <button
-                  onClick={closeConversation}
-                  style={{
-                    ...STYLES.glass,
-                    padding: `${SPACING.sm} ${SPACING.md}`,
-                    marginBottom: SPACING.lg,
-                    alignSelf: "flex-start",
-                    cursor: "pointer",
-                  }}
-                >
-                  ← Back to History
-                </button>
-
-                {(() => {
-                  const reversedIndex = history.length - 1 - openedConversation;
-                  const c = history[reversedIndex];
-                  return (
-                    <>
-                      <p
-                        style={{
-                          marginBottom: SPACING.xs,
-                          fontSize: TYPOGRAPHY.fontSize.sm,
-                          opacity: 0.7,
-                        }}
-                      >
-                        {new Date(c.timestamp).toLocaleString()}
-                      </p>
-                      <h3
-                        style={{
-                          fontWeight: TYPOGRAPHY.fontWeight.bold,
-                          color: COLORS.primaryText,
-                          marginBottom: SPACING.xl,
-                          fontSize: TYPOGRAPHY.fontSize.lg,
-                          lineHeight: 1.4,
-                        }}
-                      >
-                        {c.query}
-                      </h3>
-                      <ul
-                        style={{
-                          marginLeft: 0,
-                          padding: 0,
-                          listStyle: "none",
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: SPACING.md,
-                        }}
-                      >
-                        {c.answers.map((a, j) => {
-                          const model = c.models?.[j] || "unknown model";
-                          return (
-                            <li
-                              key={j}
-                              style={{
-                                color: TEXT_COLORS[j % TEXT_COLORS.length],
-                                fontSize: TYPOGRAPHY.fontSize.md,
-                                lineHeight: 1.6,
-                                padding: `${SPACING.md} ${SPACING.lg}`,
-                                borderRadius: "8px",
-                                backgroundColor: "rgba(255, 255, 255, 0.03)",
-                                border: `1px solid ${COLORS.borderLightSubtle}`,
-                              }}
-                            >
-                              <div
-                                style={{
-                                  marginBottom: SPACING.xs,
-                                  fontSize: TYPOGRAPHY.fontSize.sm,
-                                  opacity: 0.8,
-                                }}
-                              >
-                                <em>Member {j + 1}</em>{" "}
-                                <span
-                                  style={{
-                                    fontSize: TYPOGRAPHY.fontSize.xs,
-                                    opacity: 0.6,
-                                    fontStyle: "italic",
-                                  }}
-                                >
-                                  ({model})
-                                </span>
-                              </div>
-                              <div>{a || "*no response*"}</div>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </>
-                  );
-                })()}
-              </div>
+              <ConversationView
+                conversation={history[history.length - 1 - openedConversation]}
+                onBack={closeConversation}
+              />
             )}
           </AnimatedView>
         </div>
