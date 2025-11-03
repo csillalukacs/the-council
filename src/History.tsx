@@ -45,6 +45,35 @@ export default function History() {
     }, 150);
   };
 
+  const deleteConversation = (reversedIndex: number) => {
+    console.log("deleteConversation", reversedIndex);
+    const saved = JSON.parse(
+      localStorage.getItem(STORAGE_KEYS.CONVERSATIONS) || "[]"
+    );
+
+    // Convert reversed index to actual index (history is displayed reversed)
+    const actualIndex = saved.length - 1 - reversedIndex;
+
+    // Remove the conversation
+    saved.splice(actualIndex, 1);
+    localStorage.setItem(STORAGE_KEYS.CONVERSATIONS, JSON.stringify(saved));
+
+    // Update local state
+    setHistory(saved);
+
+    // Close conversation view if the deleted conversation was open
+    if (openedConversation === reversedIndex) {
+      closeConversation();
+    } else if (
+      openedConversation !== null &&
+      openedConversation > reversedIndex
+    ) {
+      // Adjust opened conversation index if needed
+      // (since we removed an item before it in the reversed list)
+      setOpenedConversation(openedConversation - 1);
+    }
+  };
+
   const handleCloseModal = () => {
     setShowHistory(false);
     setOpenedConversation(null);
@@ -94,6 +123,7 @@ export default function History() {
             <HistoryListView
               history={history}
               onConversationClick={openConversation}
+              onDeleteConversation={deleteConversation}
             />
           </AnimatedView>
 

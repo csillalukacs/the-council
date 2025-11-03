@@ -10,11 +10,13 @@ interface Conversation {
 interface HistoryListViewProps {
   history: Conversation[];
   onConversationClick: (index: number) => void;
+  onDeleteConversation: (index: number) => void;
 }
 
 export default function HistoryListView({
   history,
   onConversationClick,
+  onDeleteConversation,
 }: HistoryListViewProps) {
   if (history.length === 0) {
     return <p style={{ opacity: 0.7 }}>No saved conversations yet.</p>;
@@ -40,6 +42,7 @@ export default function HistoryListView({
               paddingBottom: SPACING.lg,
               cursor: "pointer",
               transition: "background-color 0.2s ease",
+              position: "relative",
             }}
             onClick={() => onConversationClick(i)}
             onMouseEnter={(e) => {
@@ -50,6 +53,38 @@ export default function HistoryListView({
               e.currentTarget.style.backgroundColor = "transparent";
             }}
           >
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDeleteConversation(i);
+              }}
+              style={{
+                position: "absolute",
+                top: SPACING.xs,
+                right: SPACING.xs,
+                background: "rgba(255, 77, 77, 0.2)",
+                border: `1px solid rgba(255, 77, 77, 0.4)`,
+                borderRadius: "4px",
+                color: "#ff6b6b",
+                cursor: "pointer",
+                padding: `${SPACING.xs} ${SPACING.sm}`,
+                fontSize: TYPOGRAPHY.fontSize.xs,
+                transition: "all 0.2s ease",
+                opacity: 0.7,
+                zIndex: 1,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity = "1";
+                e.currentTarget.style.background = "rgba(255, 77, 77, 0.3)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = "0.7";
+                e.currentTarget.style.background = "rgba(255, 77, 77, 0.2)";
+              }}
+              title="Delete conversation"
+            >
+              ✕
+            </button>
             <p
               style={{
                 marginBottom: SPACING.xs,
@@ -66,6 +101,7 @@ export default function HistoryListView({
                 marginBottom: SPACING.sm,
                 fontSize: TYPOGRAPHY.fontSize.base,
                 lineHeight: 1.4,
+                paddingRight: "30px",
               }}
             >
               {c.query}
