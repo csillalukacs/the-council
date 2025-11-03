@@ -1,7 +1,7 @@
 import { Canvas } from "@react-three/fiber";
 import { Float, Sparkles, OrbitControls } from "@react-three/drei";
 import { useState, useEffect, useRef } from "react";
-import { CouncilMemberMesh } from "./CouncilMemberMesh";
+import { CouncilMember } from "./CouncilMember";
 import CouncilUI from "./CouncilUI";
 import Settings from "./Settings";
 import History from "./History";
@@ -79,7 +79,7 @@ export default function CouncilChamber() {
         />
         <Float rotationIntensity={0}>
           {members.map((member) => (
-            <CouncilMemberMesh
+            <CouncilMember
               key={member.id}
               member={member}
               active={activeMembers.includes(member.id)}
