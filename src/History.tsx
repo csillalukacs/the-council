@@ -2,8 +2,12 @@ import { useState } from "react";
 import Modal from "./components/Modal";
 import HistoryListView from "./components/HistoryListView";
 import ConversationView from "./components/ConversationView";
-import { STORAGE_KEYS, UI_TEXT, DIMENSIONS, TIMING } from "./constants";
+import { UI_TEXT, DIMENSIONS, TIMING } from "./constants";
 import { STYLES, SPACING } from "./theme";
+import {
+  getStoredConversations,
+  saveConversations,
+} from "./utils/conversationStorage";
 import type { Conversation } from "./types";
 
 export default function History() {
@@ -14,16 +18,7 @@ export default function History() {
   );
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const viewHistory = () => {
-    const saved = JSON.parse(
-      localStorage.getItem(STORAGE_KEYS.CONVERSATIONS) || "[]"
-    );
-    setHistory(saved);
-    setShowHistory(true);
-    setOpenedConversation(null);
-  };
-
-  const openConversation = (index: number) => {
+  const transitionTo = (index: number | null) => {
     setIsTransitioning(true);
     setTimeout(() => {
       setOpenedConversation(index);
@@ -31,41 +26,17 @@ export default function History() {
     }, TIMING.animation.historyTransition);
   };
 
-  const closeConversation = () => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setOpenedConversation(null);
-      setIsTransitioning(false);
-    }, TIMING.animation.historyTransition);
+  const viewHistory = () => {
+    setHistory(getStoredConversations());
+    setShowHistory(true);
+    setOpenedConversation(null);
   };
 
   const deleteConversation = (reversedIndex: number) => {
-    console.log("deleteConversation", reversedIndex);
-    const saved = JSON.parse(
-      localStorage.getItem(STORAGE_KEYS.CONVERSATIONS) || "[]"
-    );
-
-    // Convert reversed index to actual index (history is displayed reversed)
-    const actualIndex = saved.length - 1 - reversedIndex;
-
-    // Remove the conversation
-    saved.splice(actualIndex, 1);
-    localStorage.setItem(STORAGE_KEYS.CONVERSATIONS, JSON.stringify(saved));
-
-    // Update local state
+    const saved = getStoredConversations();
+    saved.splice(saved.length - 1 - reversedIndex, 1);
+    saveConversations(saved);
     setHistory(saved);
-
-    // Close conversation view if the deleted conversation was open
-    if (openedConversation === reversedIndex) {
-      closeConversation();
-    } else if (
-      openedConversation !== null &&
-      openedConversation > reversedIndex
-    ) {
-      // Adjust opened conversation index if needed
-      // (since we removed an item before it in the reversed list)
-      setOpenedConversation(openedConversation - 1);
-    }
   };
 
   const handleCloseModal = () => {
@@ -73,6 +44,11 @@ export default function History() {
     setOpenedConversation(null);
     setIsTransitioning(false);
   };
+
+  const currentConversation =
+    openedConversation !== null
+      ? history[history.length - 1 - openedConversation]
+      : null;
 
   return (
     <div>
@@ -99,7 +75,7 @@ export default function History() {
       <Modal
         isOpen={showHistory}
         onClose={handleCloseModal}
-        title={openedConversation !== null ? undefined : "Conversation History"}
+        title={openedConversation === null ? "Conversation History" : undefined}
         maxWidth={DIMENSIONS.modal.maxWidth.history}
       >
         <div
@@ -109,27 +85,25 @@ export default function History() {
             overflow: "hidden",
           }}
         >
-          {/* History List View */}
           <AnimatedView
             show={openedConversation === null}
             isTransitioning={isTransitioning}
           >
             <HistoryListView
               history={history}
-              onConversationClick={openConversation}
+              onConversationClick={(index) => transitionTo(index)}
               onDeleteConversation={deleteConversation}
             />
           </AnimatedView>
 
-          {/* Conversation View */}
           <AnimatedView
             show={openedConversation !== null}
             isTransitioning={isTransitioning}
           >
-            {openedConversation !== null && (
+            {currentConversation && (
               <ConversationView
-                conversation={history[history.length - 1 - openedConversation]}
-                onBack={closeConversation}
+                conversation={currentConversation}
+                onBack={() => transitionTo(null)}
               />
             )}
           </AnimatedView>
@@ -148,6 +122,8 @@ function AnimatedView({
   children: React.ReactNode;
   isTransitioning: boolean;
 }) {
+  const visible = show && !isTransitioning;
+  const translateX = DIMENSIONS.transform.translateX;
   return (
     <div
       style={{
@@ -155,14 +131,13 @@ function AnimatedView({
         top: 0,
         left: 0,
         right: 0,
-        opacity: show && !isTransitioning ? 1 : 0,
-        transform:
-          show && !isTransitioning
-            ? "translateX(0)"
-            : show
-            ? `translateX(${DIMENSIONS.transform.translateX})`
-            : `translateX(-${DIMENSIONS.transform.translateX})`,
-        transition: `opacity 0.3s ease, transform 0.3s ease`,
+        opacity: visible ? 1 : 0,
+        transform: visible
+          ? "translateX(0)"
+          : show
+          ? `translateX(${translateX})`
+          : `translateX(-${translateX})`,
+        transition: "opacity 0.3s ease, transform 0.3s ease",
         pointerEvents: show ? "auto" : "none",
         width: "100%",
       }}
