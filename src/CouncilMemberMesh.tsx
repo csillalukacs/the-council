@@ -112,6 +112,8 @@ export const CouncilMemberMesh = ({
             overflowY: "scroll",
             display: answer || active ? "block" : "none",
             position: "relative",
+            //make text unselectable
+            userSelect: "none",
           }}
         >
           {answer ?? (active ? "Thinking..." : "")}
