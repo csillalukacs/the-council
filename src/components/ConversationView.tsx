@@ -144,7 +144,7 @@ export default function ConversationView({
                   ({model})
                 </span>
               </div>
-              <div>{answer || UI_TEXT.STATUS.noResponse}</div>
+              <div>{answer || UI_TEXT.STATUS.silence}</div>
             </li>
           );
         })}

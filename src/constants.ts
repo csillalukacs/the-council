@@ -135,7 +135,6 @@ export const UI_TEXT = {
   },
   STATUS: {
     thinking: "Thinking...",
-    noResponse: "*no response*",
     errorFetching: "Error fetching response.",
     silence: "*silence*",
     noConversations: "No saved conversations yet.",
