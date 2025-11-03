@@ -2,6 +2,8 @@ import { Float, Sparkles, OrbitControls } from "@react-three/drei";
 import { CouncilMember } from "../CouncilMember";
 import CouncilUI from "../CouncilUI";
 import SceneLights from "./SceneLights";
+import SceneFog from "./SceneFog";
+import StarField from "./StarField";
 import { SCENE_CONFIG } from "../constants";
 import type { CouncilMemberData } from "../hooks/useCouncilMembers";
 
@@ -38,7 +40,9 @@ export default function CouncilScene({
 }: CouncilSceneProps) {
   return (
     <>
+      <SceneFog />
       <SceneLights />
+      <StarField />
       <Sparkles
         count={SCENE_CONFIG.SPARKLES.count}
         scale={SCENE_CONFIG.SPARKLES.scale}

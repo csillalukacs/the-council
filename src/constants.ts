@@ -1,9 +1,6 @@
 // Council configuration
 export const COUNCIL_SIZE = 7;
 
-
-
-
 // LocalStorage keys
 export const STORAGE_KEYS = {
   API_KEY: "openrouter_api_key",
@@ -61,17 +58,26 @@ export const SCENE_CONFIG = {
     speed: 0.5,
   },
   LIGHTING: {
-    ambientIntensity: 0.3,
+    ambientIntensity: 0.25,
     pointLight: {
       position: [0, 5, 0] as const,
-      intensity: 2,
+      intensity: 2.5,
       color: "#8ff",
     },
     directionalLight: {
       position: [0, 10, 0] as const,
-      intensity: 0.5,
+      intensity: 0.6,
       color: "#8ff",
     },
+  },
+  FOG: {
+    color: "#888888",
+    near: 8,
+    far: 20,
+  },
+  STARS: {
+    count: 200,
+    radius: 15,
   },
 } as const;
 
