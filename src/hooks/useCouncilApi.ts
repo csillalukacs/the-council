@@ -228,7 +228,7 @@ export function useCouncilApi({
       }
       setAnswers((prev) => ({
         ...prev,
-        [memberId]: UI_TEXT.STATUS.errorFetching,
+        [memberId]: UI_TEXT.STATUS.silence,
       }));
       setActiveMembers((prev) => prev.filter((id) => id !== memberId));
       return false;

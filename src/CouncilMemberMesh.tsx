@@ -1,6 +1,6 @@
 import { Html } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import * as THREE from "three";
 import {
   SCENE_CONFIG,
@@ -26,6 +26,7 @@ export const CouncilMemberMesh = ({
   const mesh = useRef<THREE.Mesh>(null!);
   const clock = useRef(new THREE.Clock());
   const basePosition = useRef(new THREE.Vector3(0, 0, 0));
+  const textBubbleRef = useRef<HTMLDivElement>(null);
 
   const initialRotationX = member.isTorus
     ? MEMBER_ANIMATION.torusInitialRotation
@@ -40,6 +41,13 @@ export const CouncilMemberMesh = ({
   const speedVariation =
     MEMBER_ANIMATION.variation.speedBase +
     (idHash % 3) * (MEMBER_ANIMATION.variation.speedRange / 3);
+
+  // Auto-scroll text bubble to bottom when answer changes
+  useEffect(() => {
+    if (textBubbleRef.current && answer) {
+      textBubbleRef.current.scrollTop = textBubbleRef.current.scrollHeight;
+    }
+  }, [answer]);
 
   useFrame(() => {
     const t = clock.current.getElapsedTime();
@@ -135,6 +143,7 @@ export const CouncilMemberMesh = ({
       </mesh>
       <Html position={[0, 1, 1]} center zIndexRange={Z_INDEX.htmlOverlay}>
         <div
+          ref={textBubbleRef}
           className="hide-scrollbar"
           style={{
             ...STYLES.textBubble,
@@ -152,42 +161,40 @@ export const CouncilMemberMesh = ({
           }}
         >
           {answer ?? (active ? UI_TEXT.STATUS.thinking : "")}
-          {(answer === UI_TEXT.STATUS.errorFetching ||
-            answer === UI_TEXT.STATUS.silence) &&
-            onRetry && (
-              <button
-                onClick={onRetry}
-                style={{
-                  position: "absolute",
-                  bottom: SPACING.xs,
-                  right: SPACING.xs,
-                  padding: SPACING.xs,
-                  ...STYLES.glassMedium,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: DIMENSIONS.retryButton.width,
-                  height: DIMENSIONS.retryButton.height,
-                }}
-                title="Retry"
+          {answer === UI_TEXT.STATUS.silence && onRetry && (
+            <button
+              onClick={onRetry}
+              style={{
+                position: "absolute",
+                bottom: SPACING.xs,
+                right: SPACING.xs,
+                padding: SPACING.xs,
+                ...STYLES.glassMedium,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: DIMENSIONS.retryButton.width,
+                height: DIMENSIONS.retryButton.height,
+              }}
+              title="Retry"
+            >
+              <svg
+                width={DIMENSIONS.retryButton.iconSize}
+                height={DIMENSIONS.retryButton.iconSize}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                <svg
-                  width={DIMENSIONS.retryButton.iconSize}
-                  height={DIMENSIONS.retryButton.iconSize}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-                  <path d="M21 3v5h-5" />
-                  <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-                  <path d="M3 21v-5h5" />
-                </svg>
-              </button>
-            )}
+                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                <path d="M21 3v5h-5" />
+                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                <path d="M3 21v-5h5" />
+              </svg>
+            </button>
+          )}
         </div>
       </Html>
     </group>
