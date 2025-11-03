@@ -264,11 +264,18 @@ export function useCouncilApi({
     setActiveMembers(members.map((m) => m.id));
     setAnswers(initialAnswers);
 
-    await Promise.allSettled(
-      members.map(async (member) => {
-        await fetchMemberAnswer(member.id, query, conversationIndex);
-      })
-    );
+    // Stagger the requests so they don't all start streaming at once
+    const STAGGER_DELAY_MS = 1000; // Delay between starting each request
+    const requestPromises = members.map((member, index) => {
+      return new Promise<void>((resolve) => {
+        setTimeout(async () => {
+          await fetchMemberAnswer(member.id, query, conversationIndex);
+          resolve();
+        }, index * STAGGER_DELAY_MS);
+      });
+    });
+
+    await Promise.allSettled(requestPromises);
 
     setLoading(false);
   };
