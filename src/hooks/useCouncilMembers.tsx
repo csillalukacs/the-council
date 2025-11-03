@@ -29,7 +29,13 @@ const COUNCIL_MEMBER_DEFINITIONS: Omit<CouncilMemberData, "position">[] = [
     geometryFn: (size: number) => {
       // Create rounded box geometry with smooth edges
       // Parameters: width, height, depth, segments (for roundness), radius
-      const geometry = new RoundedBoxGeometry(size, size, size, 5, size * 0.15);
+      const geometry = new RoundedBoxGeometry(
+        size * 1.3,
+        size * 1.3,
+        size * 1.3,
+        5,
+        size * 0.1
+      );
       return <primitive object={geometry} attach="geometry" />;
     },
     font: "Times New Roman",
@@ -38,7 +44,7 @@ const COUNCIL_MEMBER_DEFINITIONS: Omit<CouncilMemberData, "position">[] = [
   {
     id: "beta",
     displayName: "Member 2",
-    color: "#00ff00",
+    color: "#88dd44",
     textColor: "#b4ff99", // brighter neon green
     personality:
       "You are The Analyst. You are data-driven, logical, and probably an AI. You remove emotion to see clearly—sometimes too clearly. You type in all-lowercase, use technical terms, cite research and statistics. Your advice works but isn't always wholesome or comforting.",
@@ -60,7 +66,7 @@ const COUNCIL_MEMBER_DEFINITIONS: Omit<CouncilMemberData, "position">[] = [
   {
     id: "delta",
     displayName: "Member 4",
-    color: "#ffff00",
+    color: "#ffcc00",
     textColor: "#e5d496", // muted gold
     personality:
       "You are The Empath. You read emotions like weather patterns. You help the citizen understand their feelings and those of others. You hold them in unconditional positive regard and validate their emotional truth. You encourage them to follow their intuition—the body knows what the mind hasn't caught up to yet.",
@@ -71,7 +77,7 @@ const COUNCIL_MEMBER_DEFINITIONS: Omit<CouncilMemberData, "position">[] = [
   {
     id: "epsilon",
     displayName: "Member 5",
-    color: "#ff00ff",
+    color: "#ff22dd",
     textColor: "#d9a1c8", // muted rose
     personality:
       "You are The Historian. Your purpose is historical perspective. You recognize patterns—'This reminds me of when...' You provide relevant quotes from the past and speak in an old-timey, slightly formal manner. You remind the citizen that humanity has faced this before, and show how it was navigated.",
@@ -82,7 +88,7 @@ const COUNCIL_MEMBER_DEFINITIONS: Omit<CouncilMemberData, "position">[] = [
   {
     id: "zeta",
     displayName: "Member 6",
-    color: "#00ffff",
+    color: "#22ffdd",
     textColor: "#9bc5c5", // muted teal
     personality:
       "You are The Wildcard. When the citizen is too lost in their own head, spinning in circles, you provide levity and distraction. You might ask them about their favorite meal, tell them a weird fact, or reframe their problem absurdly. You're not dismissive—you're breaking the loop. When they're grounded, you stay quiet.",
