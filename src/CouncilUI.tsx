@@ -27,6 +27,7 @@ export default function CouncilUI({
   const [tempKey, setTempKey] = useState("");
   const [isAnimating, setIsAnimating] = useState(false);
   const shouldShowInput = showKeyInput || !apiKey;
+  const [shouldRender, setShouldRender] = useState(shouldShowInput);
 
   // When user clicks "edit key", populate the input with the existing API key
   useEffect(() => {
@@ -41,6 +42,7 @@ export default function CouncilUI({
   // Handle animation when input visibility changes
   useEffect(() => {
     if (shouldShowInput) {
+      setShouldRender(true);
       // Trigger animation after render
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
@@ -49,6 +51,11 @@ export default function CouncilUI({
       });
     } else {
       setIsAnimating(false);
+      // Delay unmounting to allow exit animation
+      const timer = setTimeout(() => {
+        setShouldRender(false);
+      }, 200); // Match animation duration
+      return () => clearTimeout(timer);
     }
   }, [shouldShowInput]);
 
@@ -70,8 +77,9 @@ export default function CouncilUI({
           alignItems: "center",
         }}
       >
+        <div style={{ height: "50px", overflow: "hidden", display: "flex", alignItems: "center" }}>
         {/* API Key UI */}
-        {shouldShowInput ? (
+        {shouldRender ? (
           <div
             style={{
               display: "flex",
@@ -81,9 +89,7 @@ export default function CouncilUI({
               padding: `${SPACING.sm} ${SPACING.md}`,
               borderRadius: RADIUS.lg,
               opacity: isAnimating ? 1 : 0,
-              transform: isAnimating
-                ? "scale(1)"
-                : "scaleX(0.5)",
+              transform: isAnimating ? "scale(1)" : "scaleX(0.5)",
               transition: "opacity 0.2s ease-out, transform 0.2s ease-out",
             }}
           >
@@ -116,15 +122,15 @@ export default function CouncilUI({
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: SPACING.sm,
                 ...STYLES.glass,
-                padding: `${SPACING.xs} ${SPACING.md}`,
+                padding: `${SPACING.md} ${SPACING.md}`,
               }}
             >
               edit key
             </button>
           )
         )}
+        </div>
 
         {/* Question input */}
         <div
