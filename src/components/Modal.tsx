@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { STYLES, COLORS, SPACING, RADIUS, TYPOGRAPHY } from "../theme";
 
 interface ModalProps {
@@ -19,6 +19,8 @@ export default function Modal({
   showCloseButton = true,
 }: ModalProps) {
   const modalContentRef = useRef<HTMLDivElement>(null);
+  const [shouldRender, setShouldRender] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -28,12 +30,31 @@ export default function Modal({
     };
 
     if (isOpen) {
+      setShouldRender(true);
+      // Trigger animation after render - use double RAF to ensure DOM is ready
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsAnimating(true);
+        });
+      });
       document.addEventListener("keydown", handleEscape);
-      // Trap focus within modal
-      const firstFocusable = modalContentRef.current?.querySelector(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      ) as HTMLElement;
-      firstFocusable?.focus();
+      // Trap focus within modal - delay to ensure element is rendered
+      setTimeout(() => {
+        const firstFocusable = modalContentRef.current?.querySelector(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        ) as HTMLElement;
+        firstFocusable?.focus();
+      }, 0);
+    } else {
+      setIsAnimating(false);
+      // Delay unmounting to allow exit animation
+      const timer = setTimeout(() => {
+        setShouldRender(false);
+      }, 200); // Match animation duration
+      return () => {
+        clearTimeout(timer);
+        document.removeEventListener("keydown", handleEscape);
+      };
     }
 
     return () => {
@@ -41,11 +62,16 @@ export default function Modal({
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!shouldRender) return null;
 
   return (
     <div
-      style={STYLES.modalOverlay}
+      className="modal-overlay"
+      style={{
+        ...STYLES.modalOverlay,
+        opacity: isAnimating ? 1 : 0,
+        transition: "opacity 0.2s ease-out",
+      }}
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -54,10 +80,16 @@ export default function Modal({
       <div
         ref={modalContentRef}
         onClick={(e) => e.stopPropagation()}
+        className="modal-content"
         style={{
           ...STYLES.modalContent,
           width: maxWidth,
           maxHeight: "80vh",
+          opacity: isAnimating ? 1 : 0,
+          transform: isAnimating
+            ? "scale(1) translateY(0)"
+            : "scale(0.1) translateY(-10px)",
+          transition: "opacity 0.2s ease-out, transform 0.2s ease-out",
         }}
       >
         {showCloseButton && (
