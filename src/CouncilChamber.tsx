@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import Settings from "./Settings";
 import History from "./History";
 import Help from "./Help";
+import Quotes from "./Quotes";
 import CouncilScene from "./components/CouncilScene";
 import { useCouncilMembers } from "./hooks/useCouncilMembers";
 import { useCouncilApi } from "./hooks/useCouncilApi";
@@ -75,6 +76,7 @@ export default function CouncilChamber() {
       </Canvas>
       {showHelp && <Help setShowHelp={setShowHelp} />}
       <History />
+      <Quotes />
     </div>
   );
 }
