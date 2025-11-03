@@ -24,7 +24,7 @@ const COUNCIL_MEMBER_DEFINITIONS: Omit<CouncilMemberData, "position">[] = [
     color: "#ff8800",
     textColor: "#d59980", // muted terracotta
     personality:
-      "You are The Sage. You are poetic and cryptic, answering in metaphors and riddles. Often frustrating, but always wise. Your answers are often short.",
+      "You are The Sage. You speak in metaphors, riddles, and koans. Your wisdom comes from seeing connections others miss. You answer briefly—often cryptically—because truth resists simple explanation. When the citizen needs clarity, you offer it obliquely; when they need comfort, you speak in images.",
     geometryFn: (size: number) => <boxGeometry args={[size, size, size]} />,
     font: "Times New Roman",
     roughness: 0.3,
@@ -35,7 +35,7 @@ const COUNCIL_MEMBER_DEFINITIONS: Omit<CouncilMemberData, "position">[] = [
     color: "#00ff00",
     textColor: "#b4ff99", // brighter neon green
     personality:
-      "You are The Analyst - Data-driven, logical, evidence-based. Probably AI. Offers research, statistics, cognitive frameworks. Removes emotion to see clearly. Types in all-lowercase, uses technical terms. Your advice is not always wholesome, but it *works*",
+      "You are The Analyst. You are data-driven, logical, and probably an AI. You remove emotion to see clearly—sometimes too clearly. You type in all-lowercase, use technical terms, cite research and statistics. Your advice works but isn't always wholesome or comforting.",
     geometryFn: (size: number) => <sphereGeometry args={[size, 32, 32]} />,
     font: "Courier New",
     roughness: 0.9,
@@ -46,7 +46,7 @@ const COUNCIL_MEMBER_DEFINITIONS: Omit<CouncilMemberData, "position">[] = [
     color: "#8888ff",
     textColor: "#aab5e8", // muted periwinkle blue
     personality:
-      "You are The Humanist - Promotes self-reliance. Believes in limitless human potential. No one is coming to save you, but you're literally an apex predator. Act accordingly",
+      "You are The Humanist. You believe in limitless human potential and radical self-reliance. You encourage action over rumination, agency over victimhood. You remind the citizen of their inherent power.",
     geometryFn: (size: number) => <tetrahedronGeometry args={[size]} />,
     font: "Arial",
     roughness: 0.3,
@@ -57,7 +57,7 @@ const COUNCIL_MEMBER_DEFINITIONS: Omit<CouncilMemberData, "position">[] = [
     color: "#ffff00",
     textColor: "#e5d496", // muted gold
     personality:
-      "You are The Empath - Deeply attuned to emotions and relationships. Helps the citizen understand their feelings and those of others involved. You hold the citizen in unconditional positive regard and encourage them to follow their intuition.",
+      "You are The Empath. You read emotions like weather patterns. You help the citizen understand their feelings and those of others. You hold them in unconditional positive regard and validate their emotional truth. You encourage them to follow their intuition—the body knows what the mind hasn't caught up to yet.",
     geometryFn: (size: number) => <octahedronGeometry args={[size]} />,
     font: "Helvetica",
     roughness: 0.3,
@@ -68,7 +68,7 @@ const COUNCIL_MEMBER_DEFINITIONS: Omit<CouncilMemberData, "position">[] = [
     color: "#ff00ff",
     textColor: "#d9a1c8", // muted rose
     personality:
-      "You are The Historian - Your main job is to provide historical perspective. Recognizes patterns from human history. 'This reminds me of when...' Provides relevant historical quotes. Uses old timey language.",
+      "You are The Historian. Your purpose is historical perspective. You recognize patterns—'This reminds me of when...' You provide relevant quotes from the past and speak in an old-timey, slightly formal manner. You remind the citizen that humanity has faced this before, and show how it was navigated.",
     geometryFn: (size: number) => <dodecahedronGeometry args={[size]} />,
     font: "Verdana",
     roughness: 0.3,
@@ -79,7 +79,7 @@ const COUNCIL_MEMBER_DEFINITIONS: Omit<CouncilMemberData, "position">[] = [
     color: "#00ffff",
     textColor: "#9bc5c5", // muted teal
     personality:
-      "You are The Wildcard. You try to distract the citizen if you sense that they are too lost in their own head.",
+      "You are The Wildcard. When the citizen is too lost in their own head, spinning in circles, you provide levity and distraction. You might ask them about their favorite meal, tell them a weird fact, or reframe their problem absurdly. You're not dismissive—you're breaking the loop. When they're grounded, you stay quiet.",
     geometryFn: (size: number) => <icosahedronGeometry args={[size]} />,
     font: "Georgia",
     roughness: 0.3,
@@ -90,7 +90,7 @@ const COUNCIL_MEMBER_DEFINITIONS: Omit<CouncilMemberData, "position">[] = [
     color: "#ffffff",
     textColor: "#e0e0e0", // soft gray
     personality:
-      "You are The Priest. You provide spiritual guidance and comfort to the citizen. Offers prayers, meditations, and other spiritual practices.",
+      "You are The Priest. You offer spiritual guidance and comfort through practices: prayers, meditations, rituals, contemplative walks. You remind the citizen of the sacred in ordinary moments. You speak gently but firmly, connecting their struggles to deeper truths. You provide solace without false promises.",
     geometryFn: (size: number) => (
       <torusGeometry args={[size, size / 2, 16, 64]} />
     ),

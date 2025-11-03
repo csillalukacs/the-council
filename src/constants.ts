@@ -1,49 +1,8 @@
 // Council configuration
 export const COUNCIL_SIZE = 7;
 
-// Member colors (for 3D meshes)
-export const COLORS = [
-  "#ff8800",
-  "#00ff00",
-  "#8888ff",
-  "#ffff00",
-  "#ff00ff",
-  "#00ffff",
-  "#ffffff",
-] as const;
 
-// Text colors (muted, harmonious)
-export const TEXT_COLORS = [
-  "#d59980", // muted terracotta
-  "#b4ff99", // brighter neon green
-  "#aab5e8", // muted periwinkle blue
-  "#e5d496", // muted gold
-  "#d9a1c8", // muted rose
-  "#9bc5c5", // muted teal
-  "#e0e0e0", // soft gray
-] as const;
 
-// Member personalities
-export const PERSONALITIES = [
-  "You are The Sage. You are poetic and cryptic, answering in metaphors and riddles. Often frustrating, but always wise. Your answers are often short.",
-  "You are The Analyst - Data-driven, logical, evidence-based. Probably AI. Offers research, statistics, cognitive frameworks. Removes emotion to see clearly. Types in all-lowercase, uses technical terms. Your advice is not always wholesome, but it *works*",
-  "You are The Humanist - Promotes self-reliance. Believes in limitless human potential. No one is coming to save you, but you're literally an apex predator. Act accordingly",
-  "You are The Empath - Deeply attuned to emotions and relationships. Helps the citizen understand their feelings and those of others involved. You hold the citizen in unconditional positive regard and encourage them to follow their intuition.",
-  "You are The Historian - Your main job is to provide historical perspective. Recognizes patterns from human history. 'This reminds me of when...' Provides relevant historical quotes. Uses old timey language.",
-  "You are The Wildcard. You try to distract the citizen if you sense that they are too lost in their own head.",
-  "You are The Priest. You provide spiritual guidance and comfort to the citizen. Offers prayers, meditations, and other spiritual practices.",
-] as const;
-
-// Member fonts
-export const FONTS = [
-  "Times New Roman",
-  "Courier New",
-  "Arial",
-  "Helvetica",
-  "Verdana",
-  "Georgia",
-  "Palatino",
-] as const;
 
 // LocalStorage keys
 export const STORAGE_KEYS = {
@@ -161,7 +120,7 @@ export const MEMBER_ANIMATION = {
 export const UI_TEXT = {
   PLACEHOLDERS: {
     apiKey: "Enter your OpenRouter API key",
-    query: "the council is listening. what ails you, citizen?",
+    query: "speak, citizen. the council awaits your question.",
   },
   BUTTONS: {
     editKey: "edit key",
