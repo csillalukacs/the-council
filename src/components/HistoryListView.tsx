@@ -87,13 +87,15 @@ export default function HistoryListView({
                   position: "absolute",
                   top: SPACING.xs,
                   right: SPACING.xs,
-                  background: STYLES.deleteButton.background,
-                  border: STYLES.deleteButton.border,
+                  background: "transparent",
+                  border: "none",
                   borderRadius: RADIUS.sm,
-                  color: STYLES.deleteButton.color,
+                  color: COLORS.white,
                   cursor: "pointer",
-                  padding: `${SPACING.xs} ${SPACING.sm}`,
-                  fontSize: TYPOGRAPHY.fontSize.xs,
+                  padding: SPACING.xs,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                   transition: "all 0.2s ease",
                   opacity: isDeleting ? 0 : 0.7,
                   zIndex: 1,
@@ -102,17 +104,28 @@ export default function HistoryListView({
                 onMouseEnter={(e) => {
                   if (!isDeleting) {
                     e.currentTarget.style.opacity = "1";
-                    e.currentTarget.style.background = STYLES.deleteButton.hoverBackground;
                   }
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.opacity = "0.7";
-                  e.currentTarget.style.background = STYLES.deleteButton.background;
                 }}
                 title="Delete conversation"
                 disabled={isDeleting}
               >
-                {UI_TEXT.BUTTONS.delete}
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M3 6h18" />
+                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                </svg>
               </button>
               <p
                 style={{

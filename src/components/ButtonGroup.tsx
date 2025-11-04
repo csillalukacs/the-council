@@ -1,5 +1,5 @@
 import { Z_INDEX } from "../constants";
-import { STYLES, SPACING, RADIUS } from "../theme";
+import { SPACING } from "../theme";
 
 interface ButtonGroupProps {
   children: React.ReactNode;
@@ -22,4 +22,3 @@ export default function ButtonGroup({ children }: ButtonGroupProps) {
     </div>
   );
 }
-
