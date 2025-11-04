@@ -22,6 +22,12 @@ export default function Settings({
     localStorage.setItem(STORAGE_KEYS.MODELS, JSON.stringify(updated));
   };
 
+  const handleAllModelsChange = (value: string) => {
+    const updated = models.map(() => value);
+    setModels(updated);
+    localStorage.setItem(STORAGE_KEYS.MODELS, JSON.stringify(updated));
+  };
+
   return (
     <>
       <SettingsButton onClick={() => setShowSettings((s) => !s)} />
@@ -36,6 +42,7 @@ export default function Settings({
           members={members}
           models={models}
           onModelChange={handleModelChange}
+          onAllModelsChange={handleAllModelsChange}
         />
       </Modal>
     </>
