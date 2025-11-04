@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { STYLES, COLORS, SPACING, RADIUS, TYPOGRAPHY } from "../theme";
 import { TIMING, DIMENSIONS } from "../constants";
 
@@ -19,7 +19,6 @@ export default function Modal({
   maxWidth = "90vw",
   showCloseButton = true,
 }: ModalProps) {
-  const modalContentRef = useRef<HTMLDivElement>(null);
   const [shouldRender, setShouldRender] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -59,64 +58,92 @@ export default function Modal({
   if (!shouldRender) return null;
 
   return (
+    <div
+      className="modal-overlay"
+      style={{
+        ...STYLES.modalOverlay,
+        opacity: isAnimating ? 1 : 0,
+        transition: `opacity ${TIMING.animation.modal}ms ease-out`,
+      }}
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={title ? "modal-title" : undefined}
+    >
       <div
-        className="modal-overlay"
+        onClick={(e) => e.stopPropagation()}
+        className="modal-content"
         style={{
-          ...STYLES.modalOverlay,
+          ...STYLES.modalContent,
+          width: maxWidth,
+          maxHeight: DIMENSIONS.modal.maxHeight,
           opacity: isAnimating ? 1 : 0,
-          transition: `opacity ${TIMING.animation.modal}ms ease-out`,
+          transform: isAnimating
+            ? "scale(1) translateY(0)"
+            : `scale(${DIMENSIONS.transform.scale.initial}) translateY(${DIMENSIONS.transform.scale.translateY})`,
+          transition: `opacity ${TIMING.animation.modal}ms ease-out, transform ${TIMING.animation.modal}ms ease-out`,
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+          padding: 0,
         }}
-        onClick={onClose}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={title ? "modal-title" : undefined}
       >
+        {/* Fixed header section */}
         <div
-          ref={modalContentRef}
-          onClick={(e) => e.stopPropagation()}
-          className="modal-content"
           style={{
-            ...STYLES.modalContent,
-            width: maxWidth,
-            maxHeight: DIMENSIONS.modal.maxHeight,
-            opacity: isAnimating ? 1 : 0,
-            transform: isAnimating
-              ? "scale(1) translateY(0)"
-              : `scale(${DIMENSIONS.transform.scale.initial}) translateY(${DIMENSIONS.transform.scale.translateY})`,
-            transition: `opacity ${TIMING.animation.modal}ms ease-out, transform ${TIMING.animation.modal}ms ease-out`,
+            position: "relative",
+            padding: SPACING.xxxl,
+            paddingBottom: title ? SPACING.xl : SPACING.xxxl,
+            flexShrink: 0,
           }}
         >
-        {showCloseButton && (
-          <button
-            onClick={onClose}
-            style={{
-              position: "absolute",
-              top: SPACING.xl,
-              right: SPACING.xl,
-              ...STYLES.glassMedium,
-              borderRadius: RADIUS.md,
-              color: COLORS.primaryText,
-              padding: `${SPACING.sm} ${SPACING.md}`,
-              cursor: "pointer",
-              zIndex: 150,
-            }}
-            aria-label="Close modal"
-          >
-            ✖ Close
-          </button>
-        )}
-        {title && (
-          <h2
-            id="modal-title"
-            style={{
-              marginBottom: SPACING.xl,
-              fontSize: TYPOGRAPHY.fontSize.xxl,
-            }}
-          >
-            {title}
-          </h2>
-        )}
-        {children}
+          {showCloseButton && (
+            <button
+              onClick={onClose}
+              style={{
+                position: "absolute",
+                top: SPACING.xl,
+                right: SPACING.xl,
+                ...STYLES.glassMedium,
+                borderRadius: RADIUS.md,
+                color: COLORS.primaryText,
+                padding: `${SPACING.sm} ${SPACING.md}`,
+                cursor: "pointer",
+                zIndex: 150,
+              }}
+              aria-label="Close modal"
+            >
+              ✖ Close
+            </button>
+          )}
+          {title && (
+            <h2
+              id="modal-title"
+              style={{
+                margin: 0,
+                fontSize: TYPOGRAPHY.fontSize.xxl,
+                paddingRight: showCloseButton ? "80px" : 0,
+              }}
+            >
+              {title}
+            </h2>
+          )}
+        </div>
+
+        {/* Scrollable content section */}
+        <div
+          className="modal-content-scrollable"
+          style={{
+            flex: 1,
+            overflowY: "auto",
+            overflowX: "hidden",
+            paddingLeft: SPACING.xxxl,
+            paddingRight: SPACING.xxxl,
+            paddingBottom: SPACING.xxxl,
+          }}
+        >
+          {children}
+        </div>
       </div>
     </div>
   );
