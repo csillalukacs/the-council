@@ -1,13 +1,14 @@
-import { useState } from "react";
-import QuotesButton from "./components/QuotesButton";
 import MemberQuotes from "./components/MemberQuotes";
 
-export default function Quotes() {
-  const [showQuotes, setShowQuotes] = useState(false);
-
+export default function Quotes({
+  showQuotes,
+  setShowQuotes,
+}: {
+  showQuotes: boolean;
+  setShowQuotes: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   return (
     <>
-      <QuotesButton onClick={() => setShowQuotes(true)} />
       {showQuotes && <MemberQuotes setShowQuotes={setShowQuotes} />}
     </>
   );

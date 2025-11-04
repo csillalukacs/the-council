@@ -5,6 +5,10 @@ import History from "./History";
 import Help from "./Help";
 import Quotes from "./Quotes";
 import CouncilScene from "./components/CouncilScene";
+import ButtonGroup from "./components/ButtonGroup";
+import SettingsButton from "./components/SettingsButton";
+import HistoryButton from "./components/HistoryButton";
+import QuotesButton from "./components/QuotesButton";
 import { useCouncilMembers } from "./hooks/useCouncilMembers";
 import { useCouncilApi } from "./hooks/useCouncilApi";
 import { useApiKey, useModels } from "./hooks/useLocalStorage";
@@ -18,6 +22,9 @@ export default function CouncilChamber() {
   const [showKeyInput, setShowKeyInput] = useState(false);
   const [query, setQuery] = useState("");
   const [showHelp, setShowHelp] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [showQuotes, setShowQuotes] = useState(false);
   const prevApiKeyRef = useRef<string | null>(null);
 
   // Update showKeyInput based on whether API key exists
@@ -51,7 +58,13 @@ export default function CouncilChamber() {
         position: "relative",
       }}
     >
-      <Settings models={models} setModels={setModels} members={members} />
+      <Settings 
+        models={models} 
+        setModels={setModels} 
+        members={members}
+        showSettings={showSettings}
+        setShowSettings={setShowSettings}
+      />
       <Canvas
         camera={{
           position: SCENE_CONFIG.CAMERA.position,
@@ -75,8 +88,14 @@ export default function CouncilChamber() {
         />
       </Canvas>
       {showHelp && <Help setShowHelp={setShowHelp} />}
-      <History />
-      <Quotes />
+      <History showHistory={showHistory} setShowHistory={setShowHistory} />
+      <Quotes showQuotes={showQuotes} setShowQuotes={setShowQuotes} />
+      
+      <ButtonGroup>
+        <SettingsButton onClick={() => setShowSettings((s) => !s)} />
+        <HistoryButton onClick={() => setShowHistory(true)} />
+        <QuotesButton onClick={() => setShowQuotes(true)} />
+      </ButtonGroup>
     </div>
   );
 }

@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Modal from "./components/Modal";
-import HistoryButton from "./components/HistoryButton";
 import HistoryModalContent from "./components/HistoryModalContent";
 import { DIMENSIONS, TIMING } from "./constants";
 import {
@@ -9,13 +8,26 @@ import {
 } from "./utils/conversationStorage";
 import type { Conversation } from "./types";
 
-export default function History() {
-  const [showHistory, setShowHistory] = useState(false);
+export default function History({
+  showHistory,
+  setShowHistory,
+}: {
+  showHistory: boolean;
+  setShowHistory: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const [history, setHistory] = useState<Conversation[]>([]);
   const [openedConversation, setOpenedConversation] = useState<number | null>(
     null
   );
   const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Load history when modal opens
+  useEffect(() => {
+    if (showHistory) {
+      setHistory(getStoredConversations());
+      setOpenedConversation(null);
+    }
+  }, [showHistory]);
 
   const transitionTo = (index: number | null) => {
     setIsTransitioning(true);
@@ -23,12 +35,6 @@ export default function History() {
       setOpenedConversation(index);
       setIsTransitioning(false);
     }, TIMING.animation.historyTransition);
-  };
-
-  const viewHistory = () => {
-    setHistory(getStoredConversations());
-    setShowHistory(true);
-    setOpenedConversation(null);
   };
 
   const deleteConversation = (reversedIndex: number) => {
@@ -45,10 +51,7 @@ export default function History() {
   };
 
   return (
-    <div>
-      <HistoryButton onClick={viewHistory} />
-
-      <Modal
+    <Modal
         isOpen={showHistory}
         onClose={handleCloseModal}
         title={openedConversation === null ? "Conversation History" : undefined}
@@ -62,7 +65,6 @@ export default function History() {
           onDeleteConversation={deleteConversation}
           onBack={() => transitionTo(null)}
         />
-      </Modal>
-    </div>
+    </Modal>
   );
 }

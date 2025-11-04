@@ -1,6 +1,4 @@
-import { DIMENSIONS } from "../constants";
-import { STYLES, SPACING } from "../theme";
-import { UI_TEXT } from "../constants";
+import { STYLES, SPACING, RADIUS } from "../theme";
 
 interface HistoryButtonProps {
   onClick: () => void;
@@ -8,25 +6,44 @@ interface HistoryButtonProps {
 
 export default function HistoryButton({ onClick }: HistoryButtonProps) {
   return (
-    <div
+    <button
+      onClick={onClick}
       style={{
-        position: "absolute",
-        bottom: DIMENSIONS.history.buttonPosition.bottom,
-        right: DIMENSIONS.history.buttonPosition.right,
-        zIndex: 10,
+        ...STYLES.glass,
+        borderRadius: RADIUS.lg,
+        padding: `${SPACING.md} ${SPACING.md}`,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+        width: "36px",
+        height: "36px",
+        transition: "all 0.2s ease",
       }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = STYLES.glassMedium.background;
+        e.currentTarget.style.transform = "scale(1.05)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = STYLES.glass.background;
+        e.currentTarget.style.transform = "scale(1)";
+      }}
+      aria-label="View history"
+      title="View history"
     >
-      <button
-        onClick={onClick}
-        style={{
-          ...STYLES.glass,
-          padding: `${SPACING.md} ${SPACING.lg}`,
-          marginLeft: SPACING.md,
-        }}
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       >
-        {UI_TEXT.BUTTONS.viewHistory}
-      </button>
-    </div>
+        <circle cx="12" cy="12" r="10" />
+        <polyline points="12 6 12 12 16 14" />
+      </svg>
+    </button>
   );
 }
-
