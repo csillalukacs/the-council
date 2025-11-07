@@ -7,6 +7,7 @@ interface SettingsButtonProps {
 export default function SettingsButton({ onClick }: SettingsButtonProps) {
   return (
     <button
+      name="settings"
       onClick={onClick}
       style={{
         ...STYLES.glass,

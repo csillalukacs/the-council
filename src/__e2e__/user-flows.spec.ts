@@ -90,10 +90,7 @@ test.describe('User Flows', () => {
             page.locator('button').filter({ hasText: /settings/i }).first()
         )
 
-        // Try to find any button that might be the settings button
-        // Since we don't have exact text, we'll check for button group
-        const buttons = page.locator('button')
-        await expect(buttons.first()).toBeVisible()
+        await expect(settingsButton.first()).toBeVisible()
     })
 
     test('should display history button', async ({ page }) => {
