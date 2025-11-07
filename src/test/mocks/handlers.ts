@@ -2,8 +2,7 @@ import { http, HttpResponse } from 'msw'
 
 export const handlers = [
   // Mock successful SSE streaming response
-  http.post('https://openrouter.ai/api/v1/chat/completions', async ({ request }) => {
-    const body = await request.json() as any
+  http.post('https://openrouter.ai/api/v1/chat/completions', async ({  }) => {
     
     // Create a mock SSE stream
     const stream = new ReadableStream({
