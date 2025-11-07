@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Outer ring representing council chamber -->
+  <circle cx="32" cy="32" r="28" fill="none" stroke="#4da3cc" stroke-width="1.5" opacity="0.6"/>
+  
+  <!-- Inner council circle -->
+  <circle cx="32" cy="32" r="20" fill="none" stroke="#4da3cc" stroke-width="2" opacity="0.8"/>
+  
+  <!-- Central gathering point with glow -->
+  <circle cx="32" cy="32" r="8" fill="#4da3cc" opacity="0.3"/>
+  <circle cx="32" cy="32" r="4" fill="#4da3cc" opacity="0.9"/>
+  
+  <!-- Stars/sparkles around the council -->
+  <circle cx="16" cy="16" r="1.5" fill="#4da3cc" opacity="0.9"/>
+  <circle cx="48" cy="16" r="1.5" fill="#4da3cc" opacity="0.9"/>
+  <circle cx="16" cy="48" r="1.5" fill="#4da3cc" opacity="0.9"/>
+  <circle cx="48" cy="48" r="1.5" fill="#4da3cc" opacity="0.9"/>
+  
+  <!-- Additional smaller stars -->
+  <circle cx="24" cy="12" r="1" fill="#4da3cc" opacity="0.7"/>
+  <circle cx="40" cy="12" r="1" fill="#4da3cc" opacity="0.7"/>
+  <circle cx="24" cy="52" r="1" fill="#4da3cc" opacity="0.7"/>
+  <circle cx="40" cy="52" r="1" fill="#4da3cc" opacity="0.7"/>
+  <circle cx="12" cy="24" r="1" fill="#4da3cc" opacity="0.7"/>
+  <circle cx="12" cy="40" r="1" fill="#4da3cc" opacity="0.7"/>
+  <circle cx="52" cy="24" r="1" fill="#4da3cc" opacity="0.7"/>
+  <circle cx="52" cy="40" r="1" fill="#4da3cc" opacity="0.7"/>
+  
+  <!-- Council members represented as points around the circle -->
+  <circle cx="32" cy="12" r="2" fill="#4da3cc" opacity="0.8"/>
+  <circle cx="45" cy="20" r="2" fill="#4da3cc" opacity="0.8"/>
+  <circle cx="50" cy="32" r="2" fill="#4da3cc" opacity="0.8"/>
+  <circle cx="45" cy="44" r="2" fill="#4da3cc" opacity="0.8"/>
+  <circle cx="32" cy="52" r="2" fill="#4da3cc" opacity="0.8"/>
+  <circle cx="19" cy="44" r="2" fill="#4da3cc" opacity="0.8"/>
+  <circle cx="14" cy="32" r="2" fill="#4da3cc" opacity="0.8"/>
+  <circle cx="19" cy="20" r="2" fill="#4da3cc" opacity="0.8"/>
+</svg>
