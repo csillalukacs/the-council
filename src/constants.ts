@@ -34,6 +34,7 @@ export const AVAILABLE_MODELS = [
   "qwen/qwen-2.5-coder-32b-instruct:free",
   "mistralai/mistral-nemo:free",
   "anthropic/claude-sonnet-4.5",
+  "moonshotai/kimi-k2-thinking",
 ] as const;
 
 // System prompt for council members
