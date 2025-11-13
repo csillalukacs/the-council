@@ -81,7 +81,6 @@ export default function CouncilChamber() {
           showKeyInput={showKeyInput}
           setShowKeyInput={setShowKeyInput}
           showInterface={showInterface}
-          setShowInterface={setShowInterface}
           apiKey={apiKey}
           query={query}
           setQuery={setQuery}

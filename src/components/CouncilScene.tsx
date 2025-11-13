@@ -15,7 +15,6 @@ interface CouncilSceneProps {
   showKeyInput: boolean;
   setShowKeyInput: React.Dispatch<React.SetStateAction<boolean>>;
   showInterface: boolean;
-  setShowInterface: React.Dispatch<React.SetStateAction<boolean>>;
   apiKey: string | null;
   query: string;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
@@ -33,7 +32,6 @@ export default function CouncilScene({
   showKeyInput,
   setShowKeyInput,
   showInterface,
-  setShowInterface,
   apiKey,
   query,
   setQuery,
