@@ -8,6 +8,7 @@ import { UI_TEXT, DIMENSIONS, Z_INDEX } from "./constants";
 interface CouncilUIProps {
   showKeyInput: boolean;
   setShowKeyInput: React.Dispatch<React.SetStateAction<boolean>>;
+  showInterface: boolean;
   apiKey: string | null;
   query: string;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
@@ -20,6 +21,7 @@ interface CouncilUIProps {
 export default function CouncilUI({
   showKeyInput,
   setShowKeyInput,
+  showInterface,
   apiKey,
   query,
   setQuery,
@@ -44,29 +46,33 @@ export default function CouncilUI({
           alignItems: "center",
         }}
       >
-        <ApiKeyInput
-          showKeyInput={showKeyInput}
-          apiKey={apiKey}
-          setApiKey={setApiKey}
-          setShowKeyInput={setShowKeyInput}
-        />
-        <QueryInput query={query} setQuery={setQuery} />
-        <span>
-          <button
-            disabled={loading || !apiKey}
-            onClick={askCouncil}
-            style={{
-              marginTop: SPACING.lg,
-              margin: SPACING.md,
-              ...(loading || !apiKey
-                ? STYLES.buttonDisabled
-                : STYLES.buttonPrimary),
-            }}
-          >
-            {getButtonText()}
-          </button>
-          {!apiKey && <HelpButton setShowHelp={setShowHelp} />}
-        </span>
+        {showInterface && (
+          <>
+            <ApiKeyInput
+              showKeyInput={showKeyInput}
+              apiKey={apiKey}
+              setApiKey={setApiKey}
+              setShowKeyInput={setShowKeyInput}
+            />
+            <QueryInput query={query} setQuery={setQuery} />
+            <span>
+              <button
+                disabled={loading || !apiKey}
+                onClick={askCouncil}
+                style={{
+                  marginTop: SPACING.lg,
+                  margin: SPACING.md,
+                  ...(loading || !apiKey
+                    ? STYLES.buttonDisabled
+                    : STYLES.buttonPrimary),
+                }}
+              >
+                {getButtonText()}
+              </button>
+              {!apiKey && <HelpButton setShowHelp={setShowHelp} />}
+            </span>
+          </>
+        )}
       </div>
     </Html>
   );

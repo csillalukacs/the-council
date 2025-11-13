@@ -14,6 +14,8 @@ interface CouncilSceneProps {
   onRetryMember: (memberId: string) => void;
   showKeyInput: boolean;
   setShowKeyInput: React.Dispatch<React.SetStateAction<boolean>>;
+  showInterface: boolean;
+  setShowInterface: React.Dispatch<React.SetStateAction<boolean>>;
   apiKey: string | null;
   query: string;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
@@ -30,6 +32,8 @@ export default function CouncilScene({
   onRetryMember,
   showKeyInput,
   setShowKeyInput,
+  showInterface,
+  setShowInterface,
   apiKey,
   query,
   setQuery,
@@ -65,6 +69,7 @@ export default function CouncilScene({
       <CouncilUI
         showKeyInput={showKeyInput}
         setShowKeyInput={setShowKeyInput}
+        showInterface={showInterface}
         apiKey={apiKey}
         query={query}
         setQuery={setQuery}

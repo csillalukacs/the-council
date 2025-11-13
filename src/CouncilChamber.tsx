@@ -9,6 +9,7 @@ import ButtonGroup from "./components/ButtonGroup";
 import SettingsButton from "./components/SettingsButton";
 import HistoryButton from "./components/HistoryButton";
 import QuotesButton from "./components/QuotesButton";
+import ToggleInputButton from "./components/ToggleInputButton";
 import { useCouncilMembers } from "./hooks/useCouncilMembers";
 import { useCouncilApi } from "./hooks/useCouncilApi";
 import { useApiKey, useModels } from "./hooks/useLocalStorage";
@@ -20,6 +21,7 @@ export default function CouncilChamber() {
   const [apiKey, setApiKey] = useApiKey();
   const [models, setModels] = useModels();
   const [showKeyInput, setShowKeyInput] = useState(false);
+  const [showInterface, setShowInterface] = useState(true);
   const [query, setQuery] = useState("");
   const [showHelp, setShowHelp] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -58,9 +60,9 @@ export default function CouncilChamber() {
         position: "relative",
       }}
     >
-      <Settings 
-        models={models} 
-        setModels={setModels} 
+      <Settings
+        models={models}
+        setModels={setModels}
         members={members}
         showSettings={showSettings}
         setShowSettings={setShowSettings}
@@ -78,6 +80,8 @@ export default function CouncilChamber() {
           onRetryMember={retryMember}
           showKeyInput={showKeyInput}
           setShowKeyInput={setShowKeyInput}
+          showInterface={showInterface}
+          setShowInterface={setShowInterface}
           apiKey={apiKey}
           query={query}
           setQuery={setQuery}
@@ -90,8 +94,12 @@ export default function CouncilChamber() {
       {showHelp && <Help setShowHelp={setShowHelp} />}
       <History showHistory={showHistory} setShowHistory={setShowHistory} />
       <Quotes showQuotes={showQuotes} setShowQuotes={setShowQuotes} />
-      
+
       <ButtonGroup>
+        <ToggleInputButton
+          onClick={() => setShowInterface((s) => !s)}
+          isVisible={showInterface}
+        />
         <SettingsButton onClick={() => setShowSettings((s) => !s)} />
         <HistoryButton onClick={() => setShowHistory(true)} />
         <QuotesButton onClick={() => setShowQuotes(true)} />
