@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Keep it simple: TypeScript check before pushing
+npm run typecheck
+
+
