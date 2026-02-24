@@ -1,10 +1,13 @@
-import { AVAILABLE_MODELS, DIMENSIONS } from "../constants";
+import { DIMENSIONS } from "../constants";
 import { SPACING, TYPOGRAPHY, STYLES, RADIUS } from "../theme";
 import ModelSelector from "./ModelSelector";
 
 interface SettingsModalContentProps {
   members: Array<{ id: string; displayName: string; color: string }>;
   models: string[];
+  freeModels: string[];
+  paidModels: string[];
+  loadingModels: boolean;
   onModelChange: (index: number, value: string) => void;
   onAllModelsChange: (value: string) => void;
 }
@@ -12,10 +15,12 @@ interface SettingsModalContentProps {
 export default function SettingsModalContent({
   members,
   models,
+  freeModels,
+  paidModels,
+  loadingModels,
   onModelChange,
   onAllModelsChange,
 }: SettingsModalContentProps) {
-  // Check if all models are the same
   const allModelsSame = models.every((model) => model === models[0]);
   const currentAllModel = allModelsSame ? models[0] : "";
 
@@ -59,11 +64,20 @@ export default function SettingsModalContent({
               (Mixed)
             </option>
           )}
-          {AVAILABLE_MODELS.map((availableModel) => (
-            <option key={availableModel} value={availableModel}>
-              {availableModel}
-            </option>
-          ))}
+          <optgroup label={loadingModels ? "Free Models (loading...)" : "Free Models"}>
+            {freeModels.map((m) => (
+              <option key={m} value={m}>
+                {m}
+              </option>
+            ))}
+          </optgroup>
+          <optgroup label="Paid Models">
+            {paidModels.map((m) => (
+              <option key={m} value={m}>
+                {m}
+              </option>
+            ))}
+          </optgroup>
         </select>
       </div>
 
@@ -73,6 +87,9 @@ export default function SettingsModalContent({
           key={member.id}
           member={member}
           model={models[i]}
+          freeModels={freeModels}
+          paidModels={paidModels}
+          loadingModels={loadingModels}
           onModelChange={(value) => onModelChange(i, value)}
         />
       ))}

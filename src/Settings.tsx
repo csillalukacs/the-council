@@ -1,6 +1,7 @@
 import Modal from "./components/Modal";
 import SettingsModalContent from "./components/SettingsModalContent";
-import { STORAGE_KEYS, DIMENSIONS } from "./constants";
+import { STORAGE_KEYS, DIMENSIONS, PAID_MODELS } from "./constants";
+import { useOpenRouterModels } from "./hooks/useOpenRouterModels";
 
 export default function Settings({
   models,
@@ -15,6 +16,8 @@ export default function Settings({
   showSettings: boolean;
   setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  const { freeModels, loading } = useOpenRouterModels();
+
   const handleModelChange = (index: number, value: string) => {
     const updated = [...models];
     updated[index] = value;
@@ -38,6 +41,9 @@ export default function Settings({
       <SettingsModalContent
         members={members}
         models={models}
+        freeModels={freeModels}
+        paidModels={PAID_MODELS}
+        loadingModels={loading}
         onModelChange={handleModelChange}
         onAllModelsChange={handleAllModelsChange}
       />

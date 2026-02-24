@@ -14,8 +14,8 @@ export const API_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
 // Default model
 export const DEFAULT_MODEL = "meta-llama/llama-3.3-70b-instruct:free";
 
-// Available models list
-export const AVAILABLE_MODELS = [
+// Fallback free models (used when API fetch fails)
+export const FALLBACK_FREE_MODELS: string[] = [
   "minimax/minimax-m2:free",
   "alibaba/tongyi-deepresearch-30b-a3b:free",
   "z-ai/glm-4.5-air:free",
@@ -33,9 +33,13 @@ export const AVAILABLE_MODELS = [
   "meta-llama/llama-3.3-70b-instruct:free",
   "qwen/qwen-2.5-coder-32b-instruct:free",
   "mistralai/mistral-nemo:free",
+];
+
+// Paid models (require API credits)
+export const PAID_MODELS: string[] = [
   "anthropic/claude-sonnet-4.5",
   "moonshotai/kimi-k2-thinking",
-] as const;
+];
 
 // System prompt for council members
 export const SYSTEM_PROMPT =
