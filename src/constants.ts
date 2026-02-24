@@ -187,7 +187,7 @@ export const DIMENSIONS = {
   modal: {
     maxWidth: {
       default: "90vw",
-      settings: "400px",
+      settings: "460px",
       help: "420px",
       history: "70vw",
     },

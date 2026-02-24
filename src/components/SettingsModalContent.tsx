@@ -1,4 +1,3 @@
-import { DIMENSIONS } from "../constants";
 import { SPACING, TYPOGRAPHY, STYLES, RADIUS } from "../theme";
 import ModelSelector from "./ModelSelector";
 
@@ -32,10 +31,8 @@ export default function SettingsModalContent({
         display: "flex",
         flexDirection: "column",
         gap: SPACING.lg,
-        paddingLeft: DIMENSIONS.settings.padding.left,
-        paddingRight: DIMENSIONS.settings.padding.right,
-        paddingTop: DIMENSIONS.settings.padding.top,
-        paddingBottom: DIMENSIONS.settings.padding.bottom,
+        paddingTop: SPACING.xs,
+        paddingBottom: SPACING.xxl,
       }}
     >
       {/* Change All selector */}
@@ -96,18 +93,26 @@ export default function SettingsModalContent({
         </select>
       </div>
 
-      {/* Individual member selectors */}
-      {members.map((member, i) => (
-        <ModelSelector
-          key={member.id}
-          member={member}
-          model={models[i]}
-          freeModels={freeModels}
-          paidModels={paidModels}
-          loadingModels={loadingModels}
-          onModelChange={(value) => onModelChange(i, value)}
-        />
-      ))}
+      {/* Individual member selectors — 2-column grid */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: SPACING.lg,
+        }}
+      >
+        {members.map((member, i) => (
+          <ModelSelector
+            key={member.id}
+            member={member}
+            model={models[i]}
+            freeModels={freeModels}
+            paidModels={paidModels}
+            loadingModels={loadingModels}
+            onModelChange={(value) => onModelChange(i, value)}
+          />
+        ))}
+      </div>
     </div>
   );
 }
