@@ -10,6 +10,7 @@ interface SettingsModalContentProps {
   loadingModels: boolean;
   onModelChange: (index: number, value: string) => void;
   onAllModelsChange: (value: string) => void;
+  onShuffle: () => void;
 }
 
 export default function SettingsModalContent({
@@ -20,6 +21,7 @@ export default function SettingsModalContent({
   loadingModels,
   onModelChange,
   onAllModelsChange,
+  onShuffle,
 }: SettingsModalContentProps) {
   const allModelsSame = models.every((model) => model === models[0]);
   const currentAllModel = allModelsSame ? models[0] : "";
@@ -44,10 +46,23 @@ export default function SettingsModalContent({
           borderBottom: "1px solid rgba(102, 204, 255, 0.2)",
         }}
       >
-        <div style={{ marginBottom: SPACING.xs }}>
+        <div style={{ marginBottom: SPACING.xs, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <span style={{ fontWeight: TYPOGRAPHY.fontWeight.bold }}>
             All Members
           </span>
+          <button
+            onClick={onShuffle}
+            disabled={loadingModels}
+            style={{
+              ...STYLES.button,
+              padding: `2px ${SPACING.sm}`,
+              fontSize: TYPOGRAPHY.fontSize.sm,
+              opacity: loadingModels ? 0.5 : 1,
+              cursor: loadingModels ? "not-allowed" : "pointer",
+            }}
+          >
+            ⇄ shuffle
+          </button>
         </div>
         <select
           value={currentAllModel}

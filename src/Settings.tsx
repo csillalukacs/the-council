@@ -31,6 +31,17 @@ export default function Settings({
     localStorage.setItem(STORAGE_KEYS.MODELS, JSON.stringify(updated));
   };
 
+  const handleShuffle = () => {
+    const pool = [...freeModels];
+    const updated = models.map(() => {
+      if (pool.length === 0) pool.push(...freeModels);
+      const idx = Math.floor(Math.random() * pool.length);
+      return pool.splice(idx, 1)[0];
+    });
+    setModels(updated);
+    localStorage.setItem(STORAGE_KEYS.MODELS, JSON.stringify(updated));
+  };
+
   return (
     <Modal
       isOpen={showSettings}
@@ -46,6 +57,7 @@ export default function Settings({
         loadingModels={loading}
         onModelChange={handleModelChange}
         onAllModelsChange={handleAllModelsChange}
+        onShuffle={handleShuffle}
       />
     </Modal>
   );
