@@ -21,11 +21,10 @@ export function useOpenRouterModels() {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
         const free: string[] = (data.data as OpenRouterModel[])
-          .filter(
-            (m) => m.pricing.prompt === "0" && m.pricing.completion === "0"
-          )
+          .filter((m) => m.id.endsWith(":free"))
           .map((m) => m.id)
           .sort();
+        console.log("free models", free);
         if (free.length > 0) setFreeModels(free);
       } catch (err) {
         setError(
